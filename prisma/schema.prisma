@@ -1,0 +1,41 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Ticket {
+  id              Int      @id @default(autoincrement())
+  ticket_id       String   @unique
+  customer_name   String
+  customer_email  String
+  subject         String
+  description     String
+  status          String   @default("Open") // "Open" | "In Progress" | "Closed"
+  priority        String   @default("Medium") // "Low" | "Medium" | "High" | "Urgent"
+  category        String   @default("General") // "General" | "Technical" | "Billing" | "Feature Request"
+  attachment_url  String?
+  attachment_name String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  notes           Note[]
+
+  @@index([status])
+  @@index([created_at])
+}
+
+model Note {
+  id            Int      @id @default(autoincrement())
+  ticket_id     String
+  ticket        Ticket   @relation(fields: [ticket_id], references: [ticket_id], onDelete: Cascade)
+  note_text     String
+  author        String   @default("Support Agent")
+  is_internal   Boolean  @default(false)
+  activity_type String   @default("comment") // "comment" | "status_change" | "system"
+  created_at    DateTime @default(now())
+
+  @@index([ticket_id])
+}
