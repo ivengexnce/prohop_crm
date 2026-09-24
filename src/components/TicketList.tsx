@@ -259,13 +259,13 @@ export default function TicketList({
 
         {/* ─── Desktop Table View (>= md) ──────────────────────────────────── */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs sm:text-sm">
+          <table className="w-full text-left border-collapse text-xs sm:text-sm min-w-[1020px]">
             <thead>
               <tr className="border-b border-white/[0.08] bg-zinc-950/70 text-zinc-400 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="py-3 pl-4 pr-2 w-10">
+                <th className="py-3 pl-4 pr-2 w-10 text-center">
                   <button
                     onClick={toggleSelectAll}
-                    className="text-zinc-400 hover:text-white cursor-pointer"
+                    className="text-zinc-400 hover:text-white cursor-pointer inline-flex items-center justify-center"
                     title={selectedIds.length === tickets.length ? 'Deselect all' : 'Select all'}
                   >
                     {selectedIds.length === tickets.length && tickets.length > 0 ? (
@@ -275,14 +275,14 @@ export default function TicketList({
                     )}
                   </button>
                 </th>
-                <th className="py-3 px-3">Ticket ID</th>
-                <th className="py-3 px-3">Customer</th>
-                <th className="py-3 px-3">Subject & Context</th>
-                <th className="py-3 px-3">Status</th>
-                <th className="py-3 px-3">Priority</th>
-                <th className="py-3 px-3">Category</th>
-                <th className="py-3 px-3">SLA Health</th>
-                <th className="py-3 pr-4 pl-3 text-right">Actions</th>
+                <th className="py-3 px-2.5 w-24">Ticket ID</th>
+                <th className="py-3 px-2.5 w-40">Customer</th>
+                <th className="py-3 px-3 min-w-[200px]">Subject & Context</th>
+                <th className="py-3 px-2.5 w-28">Status</th>
+                <th className="py-3 px-2.5 w-24">Priority</th>
+                <th className="py-3 px-2.5 w-28">Category</th>
+                <th className="py-3 px-2.5 w-28">SLA Health</th>
+                <th className="py-3 pr-4 pl-2.5 text-right w-32">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04]">
@@ -307,8 +307,8 @@ export default function TicketList({
                     }`}
                   >
                     {/* Checkbox */}
-                    <td className="py-3 pl-4 pr-2" onClick={(e) => toggleSelect(t.ticket_id, e)}>
-                      <button className="text-zinc-400 hover:text-white cursor-pointer">
+                    <td className="py-3 pl-4 pr-2 w-10 text-center" onClick={(e) => toggleSelect(t.ticket_id, e)}>
+                      <button className="text-zinc-400 hover:text-white cursor-pointer inline-flex items-center justify-center">
                         {isSelected ? (
                           <CheckSquare className="w-4 h-4 text-indigo-400" />
                         ) : (
@@ -318,14 +318,14 @@ export default function TicketList({
                     </td>
 
                     {/* Ticket ID */}
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-3 px-2.5 whitespace-nowrap w-24">
                       <div className="flex items-center gap-1.5">
                         <span className="font-mono text-xs font-semibold text-zinc-300 group-hover:text-white transition-colors">
                           {t.ticket_id}
                         </span>
                         <button
                           onClick={(e) => handleCopy(t.ticket_id, e)}
-                          className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer"
+                          className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer"
                           title="Copy ID"
                         >
                           {copiedId === t.ticket_id ? (
@@ -338,48 +338,50 @@ export default function TicketList({
                     </td>
 
                     {/* Customer Info */}
-                    <td className="py-3 px-3 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
+                    <td className="py-3 px-2.5 w-40">
+                      <div className="flex items-center gap-2 min-w-0">
                         <div className="w-6 h-6 rounded-full bg-zinc-800 border border-white/[0.08] text-zinc-300 font-bold text-[10px] flex items-center justify-center shrink-0">
                           {t.customer_name.charAt(0)}
                         </div>
-                        <div>
-                          <p className="font-medium text-zinc-200 group-hover:text-white transition-colors leading-tight">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-zinc-200 group-hover:text-white transition-colors leading-tight truncate text-xs max-w-[120px]">
                             {t.customer_name}
                           </p>
-                          <p className="text-[11px] text-zinc-400 font-mono leading-tight">{t.customer_email}</p>
+                          <p className="text-[10px] text-zinc-400 font-mono leading-tight truncate max-w-[120px]">
+                            {t.customer_email}
+                          </p>
                         </div>
                       </div>
                     </td>
 
                     {/* Subject & Activity count */}
-                    <td className="py-3 px-3 max-w-xs md:max-w-md">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-zinc-200 truncate group-hover:text-zinc-100 transition-colors">
+                    <td className="py-3 px-3 min-w-[200px]">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="font-medium text-zinc-200 truncate group-hover:text-zinc-100 transition-colors text-xs sm:text-sm">
                           {t.subject}
                         </span>
                         {t.attachment_url && (
                           <span
-                            className="p-1 rounded bg-zinc-800/80 text-zinc-400 border border-zinc-700/60 shrink-0"
+                            className="p-0.5 px-1 rounded bg-zinc-800/80 text-cyan-400 border border-zinc-700/60 shrink-0 text-[10px]"
                             title="Contains attachment"
                           >
-                            <Paperclip className="w-3 h-3 text-cyan-400" />
+                            <Paperclip className="w-3 h-3 inline" />
                           </span>
                         )}
                         {(t.notes_count ?? 0) > 0 && (
-                          <span className="flex items-center gap-1 text-[10px] font-semibold text-zinc-400 px-1.5 py-0.5 rounded-full bg-zinc-800/80 border border-zinc-700/60 shrink-0 font-mono">
-                            <MessageSquare className="w-3 h-3 text-indigo-400" />
+                          <span className="flex items-center gap-0.5 text-[10px] font-semibold text-zinc-400 px-1.5 py-0.5 rounded-full bg-zinc-800/80 border border-zinc-700/60 shrink-0 font-mono">
+                            <MessageSquare className="w-2.5 h-2.5 text-indigo-400" />
                             {t.notes_count}
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-zinc-400 truncate mt-0.5">
+                      <p className="text-[11px] text-zinc-400 truncate mt-0.5 max-w-xs sm:max-w-sm md:max-w-md">
                         {t.description}
                       </p>
                     </td>
 
                     {/* Status Badge */}
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-3 px-2.5 whitespace-nowrap w-28">
                       <div className="flex items-center gap-1.5">
                         {getStatusBadge(t.status)}
                         {t.is_archived && (
@@ -391,28 +393,28 @@ export default function TicketList({
                     </td>
 
                     {/* Priority */}
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-3 px-2.5 whitespace-nowrap w-24">
                       {getPriorityBadge(t.priority)}
                     </td>
 
                     {/* Category */}
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-3 px-2.5 whitespace-nowrap w-28">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-800/80 text-zinc-300 border border-zinc-700/60">
                         {t.category}
                       </span>
                     </td>
 
                     {/* SLA Health Indicator */}
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-3 px-2.5 whitespace-nowrap w-28">
                       <div className="flex items-center gap-1.5">
-                        <Clock className={`w-3.5 h-3.5 ${sla.isBreached ? 'text-rose-400' : 'text-zinc-400'}`} />
+                        <Clock className={`w-3.5 h-3.5 shrink-0 ${sla.isBreached ? 'text-rose-400' : 'text-zinc-400'}`} />
                         <span
                           className={`text-xs font-semibold ${
                             sla.isBreached
-                              ? 'text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20'
+                              ? 'text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20'
                               : t.status === 'Closed'
                               ? 'text-zinc-400'
-                              : 'text-zinc-300'
+                              : 'text-zinc-200'
                           }`}
                         >
                           {sla.text}
@@ -424,7 +426,7 @@ export default function TicketList({
                     </td>
 
                     {/* Quick Action Button */}
-                    <td className="py-3 pr-4 pl-3 text-right whitespace-nowrap">
+                    <td className="py-3 pr-4 pl-2.5 text-right whitespace-nowrap w-32">
                       <div className="flex items-center justify-end gap-1.5">
                         <div
                           className="relative inline-block"

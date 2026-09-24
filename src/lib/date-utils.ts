@@ -47,8 +47,8 @@ export function getSlaStatus(createdAt: string, status: string): { text: string;
 
   // Standard SLA target is 24 hours
   if (hoursElapsed > 24) {
-    return { text: `SLA Breached (${Math.floor(hoursElapsed)}h)`, isBreached: true };
+    return { text: `Breached (${Math.floor(hoursElapsed)}h)`, isBreached: true };
   }
   const remaining = Math.max(1, Math.round(24 - hoursElapsed));
-  return { text: `${remaining}h SLA left`, isBreached: false };
+  return { text: `${remaining}h left`, isBreached: false };
 }
