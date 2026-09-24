@@ -9,10 +9,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'NexusCRM | Enterprise Support Ops & Ticketing CRM',
+  title: 'ProHop | Enterprise Support Ops & Ticketing CRM',
   description:
-    'Advanced full-stack customer support ticketing CRM with real-time analytics, SLA tracking, AI triage, and team collaboration workflows.',
-  keywords: ['CRM', 'Customer Support', 'Ticketing System', 'Helpdesk', 'Next.js', 'React', 'Kanban'],
+    'ProHop: Advanced full-stack customer support ticketing CRM with real-time analytics, SLA tracking, AI triage, and team collaboration workflows.',
+  keywords: ['ProHop', 'CRM', 'Customer Support', 'Ticketing System', 'Helpdesk', 'Next.js', 'React', 'Kanban'],
 };
 
 export default function RootLayout({

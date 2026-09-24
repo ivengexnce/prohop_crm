@@ -3,24 +3,52 @@
 :root {
   --background: #090a0f;
   --foreground: #f4f4f5;
+  --text-title: #ffffff;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
   --card-bg: rgba(14, 17, 26, 0.85);
-  --card-border: rgba(255, 255, 255, 0.07);
-  --card-hover-border: rgba(255, 255, 255, 0.16);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-hover-border: rgba(255, 255, 255, 0.18);
   --card-bevel: rgba(255, 255, 255, 0.06);
+  --navbar-bg: rgba(9, 10, 15, 0.85);
+  --table-head-bg: rgba(14, 17, 26, 0.95);
+  --table-head-text: #a1a1aa;
+  --table-row-hover: rgba(255, 255, 255, 0.04);
+  --table-row-selected: rgba(99, 102, 241, 0.12);
+  --spotlight-glow: rgba(99, 102, 241, 0.14);
+  --input-bg: rgba(18, 20, 29, 0.9);
+  --input-border: rgba(255, 255, 255, 0.08);
   --accent-primary: #6366f1;
-  --accent-glow: rgba(99, 102, 241, 0.15);
+  --kbd-bg: rgba(24, 24, 27, 0.8);
+  --kbd-text: #a1a1aa;
+  --kbd-border: rgba(255, 255, 255, 0.1);
   color-scheme: dark;
 }
 
 .light-theme {
   --background: #f8fafc;
   --foreground: #090d16;
-  --card-bg: rgba(255, 255, 255, 0.92);
-  --card-border: rgba(15, 23, 42, 0.08);
-  --card-hover-border: rgba(15, 23, 42, 0.16);
-  --card-bevel: rgba(255, 255, 255, 0.9);
+  --text-title: #0f172a;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --card-bg: rgba(255, 255, 255, 0.94);
+  --card-border: rgba(15, 23, 42, 0.09);
+  --card-hover-border: rgba(15, 23, 42, 0.22);
+  --card-bevel: rgba(255, 255, 255, 0.95);
+  --navbar-bg: rgba(255, 255, 255, 0.88);
+  --table-head-bg: #f1f5f9;
+  --table-head-text: #475569;
+  --table-row-hover: rgba(15, 23, 42, 0.035);
+  --table-row-selected: rgba(99, 102, 241, 0.08);
+  --spotlight-glow: rgba(99, 102, 241, 0.07);
+  --input-bg: #ffffff;
+  --input-border: rgba(15, 23, 42, 0.12);
   --accent-primary: #4f46e5;
-  --accent-glow: rgba(79, 70, 229, 0.08);
+  --kbd-bg: #f1f5f9;
+  --kbd-text: #475569;
+  --kbd-border: #cbd5e1;
   color-scheme: light;
 }
 
@@ -50,8 +78,8 @@ body {
 .light-theme body {
   background-image: 
     radial-gradient(ellipse 65% 35% at 50% 0%, rgba(99, 102, 241, 0.06), transparent 75%),
-    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
   background-size: 100% 100%, 32px 32px, 32px 32px;
 }
 
@@ -66,12 +94,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(148, 163, 184, 0.25);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
+  background: rgba(148, 163, 184, 0.45);
 }
 
 /* Glass & Card Surfaces */
@@ -88,8 +116,8 @@ body {
 .light-theme .glass-panel {
   box-shadow: 
     inset 0 1px 0 0 var(--card-bevel),
-    0 10px 25px -5px rgba(15, 23, 42, 0.05),
-    0 4px 6px -2px rgba(15, 23, 42, 0.02);
+    0 6px 20px -4px rgba(15, 23, 42, 0.06),
+    0 2px 4px -2px rgba(15, 23, 42, 0.03);
 }
 
 .glow-card {
@@ -110,8 +138,8 @@ body {
 .light-theme .glow-card:hover {
   box-shadow: 
     inset 0 1px 0 0 var(--card-bevel),
-    0 14px 30px -8px rgba(15, 23, 42, 0.08),
-    0 0 0 1px rgba(15, 23, 42, 0.05);
+    0 10px 25px -5px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
 }
 
 /* Linear-style Spotlight Container */
@@ -136,7 +164,7 @@ body {
   inset: -1px;
   background: radial-gradient(
     450px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
-    rgba(99, 102, 241, 0.12),
+    var(--spotlight-glow),
     transparent 80%
   );
   border-radius: inherit;
@@ -159,20 +187,119 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.65rem;
   font-weight: 600;
-  color: #a1a1aa;
-  background-color: rgba(24, 24, 27, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+  color: var(--kbd-text);
+  background-color: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  border-bottom: 2px solid var(--kbd-border);
   border-radius: 0.375rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .light-theme .kbd-badge {
-  color: #52525b;
-  background-color: #f4f4f5;
-  border: 1px solid #e4e4e7;
-  border-bottom: 2px solid #d4d4d8;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   COMPREHENSIVE LIGHT THEME CONTRAST & ACCESSIBILITY GUARANTEE
+   Ensures text, inputs, cards, and tables NEVER appear white-on-white in light mode
+   ───────────────────────────────────────────────────────────────────────────── */
+.light-theme .text-white {
+  color: #0f172a !important;
+}
+
+.light-theme .text-zinc-100,
+.light-theme .text-slate-100 {
+  color: #0f172a !important;
+}
+
+.light-theme .text-zinc-200,
+.light-theme .text-slate-200 {
+  color: #1e293b !important;
+}
+
+.light-theme .text-zinc-300,
+.light-theme .text-slate-300 {
+  color: #334155 !important;
+}
+
+.light-theme .text-zinc-400,
+.light-theme .text-slate-400 {
+  color: #475569 !important;
+}
+
+.light-theme .text-zinc-500,
+.light-theme .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Background elevation in light mode */
+.light-theme header {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+.light-theme footer {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  border-top-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+.light-theme .bg-zinc-950,
+.light-theme .bg-slate-950,
+.light-theme .bg-\[\#090a0f\],
+.light-theme .bg-\[\#090a0f\]\/80 {
+  background-color: #ffffff !important;
+}
+
+.light-theme .bg-zinc-900,
+.light-theme .bg-zinc-900\/90,
+.light-theme .bg-zinc-900\/80,
+.light-theme .bg-zinc-900\/60,
+.light-theme .bg-slate-900,
+.light-theme .bg-slate-900\/90,
+.light-theme .bg-slate-900\/80 {
+  background-color: #f8fafc !important;
+}
+
+.light-theme .bg-zinc-800,
+.light-theme .bg-zinc-800\/80,
+.light-theme .bg-zinc-800\/60,
+.light-theme .bg-slate-800,
+.light-theme .bg-slate-800\/80 {
+  background-color: #f1f5f9 !important;
+}
+
+.light-theme .border-white\/\[0\.08\],
+.light-theme .border-white\/\[0\.12\],
+.light-theme .border-white\/\[0\.06\],
+.light-theme .border-white\/\[0\.04\],
+.light-theme .border-white\/10,
+.light-theme .border-white\/20,
+.light-theme .border-zinc-700,
+.light-theme .border-zinc-700\/80,
+.light-theme .border-slate-700 {
+  border-color: rgba(15, 23, 42, 0.09) !important;
+}
+
+.light-theme thead tr {
+  background-color: #f1f5f9 !important;
+  border-bottom-color: rgba(15, 23, 42, 0.09) !important;
+}
+
+.light-theme tbody tr:hover {
+  background-color: rgba(15, 23, 42, 0.035) !important;
+}
+
+.light-theme input,
+.light-theme textarea,
+.light-theme select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+.light-theme input::placeholder,
+.light-theme textarea::placeholder {
+  color: #94a3b8 !important;
 }
 
 /* Pulsing indicators */
@@ -183,28 +310,4 @@ body {
 
 .animate-pulse-dot {
   animation: pulse-dot 2s infinite ease-in-out;
-}
-
-/* Custom micro-shimmer */
-@keyframes linear-shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
-}
-
-.animate-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.animate-shimmer::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.06) 50%,
-    transparent 100%
-  );
-  animation: linear-shimmer 2.2s infinite ease-in-out;
 }
