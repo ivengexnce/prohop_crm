@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { getStorageProvider } from '@/lib/storage';
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,31 +46,22 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Ensure uploads directory exists
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    // Generate safe unique filename
-    const ext = path.extname(file.name) || '.bin';
-    const safeBaseName = path
-      .basename(file.name, ext)
-      .replace(/[^a-zA-Z0-9_-]/g, '_')
-      .substring(0, 30);
-    const uniqueName = `${Date.now()}_${safeBaseName}${ext}`;
-    const filePath = path.join(uploadsDir, uniqueName);
-
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${uniqueName}`;
+    // Delegate to pluggable storage provider (Local Disk or Cloud S3/R2)
+    const storage = getStorageProvider();
+    const result = await storage.uploadFile({
+      name: file.name,
+      buffer,
+      mimeType: file.type,
+      size: file.size,
+    });
 
     return NextResponse.json(
       {
         success: true,
-        url: publicUrl,
-        name: file.name,
-        size: file.size,
+        url: result.url,
+        name: result.name,
+        size: result.size,
+        provider: result.provider,
       },
       { status: 201 }
     );
