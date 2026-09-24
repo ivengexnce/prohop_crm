@@ -471,10 +471,10 @@ function DashboardContent() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsCreateModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md shadow-indigo-600/25 border border-indigo-400/30 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold !text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md shadow-indigo-600/25 border border-indigo-400/30 transition-all cursor-pointer"
             >
-              <span>+ New Ticket</span>
-              <kbd className="hidden sm:inline text-[10px] bg-indigo-700/60 px-1.5 py-0.2 rounded font-mono font-medium border border-indigo-400/30 text-indigo-100">
+              <span className="!text-white font-semibold">+ New Ticket</span>
+              <kbd className="hidden sm:inline text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-mono font-medium border border-white/30 !text-white">
                 N
               </kbd>
             </motion.button>

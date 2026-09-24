@@ -164,11 +164,11 @@ export default function Navbar({
               whileTap={{ scale: 0.98 }}
               onClick={onOpenCreateModal}
               id="btn-create-ticket-header"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md shadow-indigo-600/25 border border-indigo-400/30 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold !text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md shadow-indigo-600/25 border border-indigo-400/30 transition-all cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
-              <span>New Ticket</span>
-              <kbd className="hidden md:inline-block px-1.5 py-0.2 rounded bg-indigo-700/60 text-[10px] font-mono font-medium border border-indigo-400/30 text-indigo-100 ml-1">
+              <Plus className="w-4 h-4 !text-white" />
+              <span className="!text-white font-semibold">New Ticket</span>
+              <kbd className="hidden md:inline-block px-1.5 py-0.2 rounded bg-white/20 !text-white text-[10px] font-mono font-medium border border-white/30 ml-1">
                 N
               </kbd>
             </motion.button>

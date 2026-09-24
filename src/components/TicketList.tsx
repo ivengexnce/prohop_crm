@@ -19,6 +19,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTheme } from '@/lib/theme-context';
 
 interface TicketListProps {
   tickets: TicketItem[];
@@ -37,6 +38,8 @@ export default function TicketList({
   onResetFilters,
   onOpenCreateModal,
 }: TicketListProps) {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
@@ -115,26 +118,60 @@ export default function TicketList({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [tickets, highlightedIndex, onSelectTicket]);
 
+  // Creative Color Psychology Badges:
+  // Open = Solar Amber (Active vigilance, awaiting triage)
+  // In Progress = Electric Azure/Sky (Deep cognitive focus & velocity)
+  // Closed = Lush Emerald (Resolution, closure & peace of mind)
   const getStatusBadge = (status: TicketStatus) => {
     switch (status) {
       case 'Open':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-colors ${
+              isLight
+                ? 'bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs font-bold'
+                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-2xs'
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isLight ? 'bg-amber-500' : 'bg-amber-400'
+              } animate-pulse`}
+            />
             Open
           </span>
         );
       case 'In Progress':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-colors ${
+              isLight
+                ? 'bg-sky-50 text-sky-900 border border-sky-300 shadow-2xs font-bold'
+                : 'bg-sky-500/10 text-sky-400 border border-sky-500/20 shadow-2xs'
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isLight ? 'bg-sky-500' : 'bg-sky-400'
+              }`}
+            />
             In Progress
           </span>
         );
       case 'Closed':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-colors ${
+              isLight
+                ? 'bg-emerald-50 text-emerald-900 border border-emerald-300 shadow-2xs font-bold'
+                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-2xs'
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isLight ? 'bg-emerald-500' : 'bg-emerald-400'
+              }`}
+            />
             Closed
           </span>
         );
@@ -147,26 +184,50 @@ export default function TicketList({
     switch (priority) {
       case 'Urgent':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
-            <Flame className="w-3 h-3 text-rose-400" />
+          <span
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${
+              isLight
+                ? 'bg-rose-50 text-rose-800 border border-rose-300 shadow-2xs'
+                : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+            }`}
+          >
+            <Flame className="w-3 h-3 text-rose-500" />
             Urgent
           </span>
         );
       case 'High':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/20">
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold ${
+              isLight
+                ? 'bg-orange-50 text-orange-800 border border-orange-300'
+                : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+            }`}
+          >
             High
           </span>
         );
       case 'Medium':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold ${
+              isLight
+                ? 'bg-indigo-50 text-indigo-800 border border-indigo-300'
+                : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+            }`}
+          >
             Medium
           </span>
         );
       case 'Low':
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-800 text-zinc-400 border border-zinc-700/60">
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium ${
+              isLight
+                ? 'bg-slate-100 text-slate-600 border border-slate-300'
+                : 'bg-zinc-800 text-zinc-400 border border-zinc-700/60'
+            }`}
+          >
             Low
           </span>
         );
