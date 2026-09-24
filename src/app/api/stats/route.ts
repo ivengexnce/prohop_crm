@@ -1,14 +1,36 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const [total, open, inProgress, closed, urgent] = await Promise.all([
-      prisma.ticket.count(),
-      prisma.ticket.count({ where: { status: 'Open' } }),
-      prisma.ticket.count({ where: { status: 'In Progress' } }),
-      prisma.ticket.count({ where: { status: 'Closed' } }),
-      prisma.ticket.count({ where: { priority: 'Urgent', status: { not: 'Closed' } } }),
+    const searchParams = request.nextUrl.searchParams;
+    const orgIdParam =
+      searchParams.get('org_id') ||
+      request.headers.get('x-organization-id') ||
+      'org_default';
+
+    const baseWhere: any = {
+      is_archived: false,
+    };
+
+    if (orgIdParam && orgIdParam !== 'all') {
+      baseWhere.organization_id = orgIdParam;
+    }
+
+    const [total, open, inProgress, closed, urgent, archived] = await Promise.all([
+      prisma.ticket.count({ where: baseWhere }),
+      prisma.ticket.count({ where: { ...baseWhere, status: 'Open' } }),
+      prisma.ticket.count({ where: { ...baseWhere, status: 'In Progress' } }),
+      prisma.ticket.count({ where: { ...baseWhere, status: 'Closed' } }),
+      prisma.ticket.count({
+        where: { ...baseWhere, priority: 'Urgent', status: { not: 'Closed' } },
+      }),
+      prisma.ticket.count({
+        where: {
+          ...(orgIdParam && orgIdParam !== 'all' ? { organization_id: orgIdParam } : {}),
+          is_archived: true,
+        },
+      }),
     ]);
 
     const resolutionRate = total > 0 ? Math.round((closed / total) * 100) : 0;
@@ -20,6 +42,7 @@ export async function GET() {
         in_progress: inProgress,
         closed,
         urgent,
+        archived,
         resolution_rate: resolutionRate,
       },
       { status: 200 }

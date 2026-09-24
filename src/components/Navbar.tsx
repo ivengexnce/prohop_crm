@@ -24,6 +24,7 @@ interface NavbarProps {
   onOpenCommandPalette: () => void;
   onOpenShortcuts: () => void;
   isSeeding: boolean;
+  isLiveConnected?: boolean;
 }
 
 export default function Navbar({
@@ -33,6 +34,7 @@ export default function Navbar({
   onOpenCommandPalette,
   onOpenShortcuts,
   isSeeding,
+  isLiveConnected = true,
 }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
 
@@ -62,7 +64,7 @@ export default function Navbar({
                 </span>
                 <span className="px-2 py-0.5 text-[10px] font-mono font-medium bg-zinc-800 text-zinc-300 border border-zinc-700/80 rounded-full flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                  <span>v2.4.0</span>
+                  <span>v2.5.0</span>
                 </span>
               </div>
               <p className="text-[11px] text-zinc-400 hidden sm:block tracking-normal">
@@ -83,14 +85,24 @@ export default function Navbar({
             </button>
           </div>
 
-          {/* Database WAL Status Beacon */}
+          {/* Real-Time Live Sync & SQLite WAL Status Beacon */}
           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-white/[0.08] text-xs text-zinc-300">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              <span
+                className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                  isLiveConnected ? 'bg-emerald-400' : 'bg-amber-400'
+                }`}
+              />
+              <span
+                className={`relative inline-flex rounded-full h-2 w-2 ${
+                  isLiveConnected ? 'bg-emerald-500' : 'bg-amber-500'
+                }`}
+              />
             </span>
             <Database className="w-3.5 h-3.5 text-emerald-400 ml-0.5" />
-            <span className="font-mono text-[11px] text-zinc-300">SQLite WAL Active</span>
+            <span className="font-mono text-[11px] text-zinc-300">
+              {isLiveConnected ? 'SSE Live & WAL Active' : 'Connecting Sync...'}
+            </span>
           </div>
 
           {/* Action CTAs */}

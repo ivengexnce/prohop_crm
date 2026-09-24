@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { eventHub } from '@/lib/events';
+import { dispatchNotification } from '@/lib/notifications';
 
 // GET /api/tickets/[ticket_id]
 export async function GET(
@@ -25,9 +27,10 @@ export async function GET(
       );
     }
 
-    // Exact structure specified in prompt + rich fields
+    // Response payload with multi-tenant and archival fields
     const responsePayload = {
       ticket_id: ticket.ticket_id,
+      organization_id: ticket.organization_id,
       customer_name: ticket.customer_name,
       customer_email: ticket.customer_email,
       subject: ticket.subject,
@@ -37,6 +40,8 @@ export async function GET(
       category: ticket.category,
       attachment_url: ticket.attachment_url,
       attachment_name: ticket.attachment_name,
+      is_archived: ticket.is_archived,
+      deleted_at: ticket.deleted_at ? ticket.deleted_at.toISOString() : null,
       created_at: ticket.created_at.toISOString(),
       updated_at: ticket.updated_at.toISOString(),
       notes: ticket.notes.map((n) => ({
@@ -76,6 +81,7 @@ export async function PUT(
       is_internal = false,
       attachment_url,
       attachment_name,
+      is_archived,
     } = body;
 
     // Check if ticket exists
@@ -120,6 +126,11 @@ export async function PUT(
       updateData.attachment_name = attachment_name || 'attachment';
     }
 
+    if (typeof is_archived === 'boolean') {
+      updateData.is_archived = is_archived;
+      updateData.deleted_at = is_archived ? new Date() : null;
+    }
+
     // Update ticket
     const updatedTicket = await prisma.ticket.update({
       where: { ticket_id },
@@ -152,6 +163,25 @@ export async function PUT(
       });
     }
 
+    // Real-Time Event Notification (SSE)
+    eventHub.emitTicketEvent('ticket.updated', {
+      ticket_id,
+      status: updatedTicket.status,
+      priority: updatedTicket.priority,
+      is_archived: updatedTicket.is_archived,
+      updated_at: updatedTicket.updated_at.toISOString(),
+    });
+
+    // Outbound Webhook Dispatch
+    dispatchNotification({
+      event: 'ticket.updated',
+      ticket_id,
+      status: updatedTicket.status,
+      priority: updatedTicket.priority,
+      details: isStatusChanged ? `Status transitioned from ${existing.status} to ${status}` : 'Ticket updated',
+      timestamp: updatedTicket.updated_at.toISOString(),
+    });
+
     // Return exact response format specified in prompt:
     // { "success": true, "updated_at": "2026-09-23T11:00:00" }
     return NextResponse.json(
@@ -165,6 +195,77 @@ export async function PUT(
     console.error('Error updating ticket:', error);
     return NextResponse.json(
       { error: 'Failed to update ticket', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/tickets/[ticket_id] - Soft Delete / Data Archival
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ ticket_id: string }> }
+) {
+  try {
+    const { ticket_id } = await context.params;
+
+    const existing = await prisma.ticket.findUnique({
+      where: { ticket_id },
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'Not Found', message: `Ticket ${ticket_id} not found.` },
+        { status: 404 }
+      );
+    }
+
+    // Soft delete: set is_archived = true and deleted_at = now()
+    const now = new Date();
+    await prisma.ticket.update({
+      where: { ticket_id },
+      data: {
+        is_archived: true,
+        deleted_at: now,
+      },
+    });
+
+    // Append system audit record
+    await prisma.note.create({
+      data: {
+        ticket_id,
+        note_text: 'Ticket was soft-deleted / archived for data retention compliance.',
+        author: 'System Audit',
+        is_internal: true,
+        activity_type: 'system',
+      },
+    });
+
+    // Emit real-time event
+    eventHub.emitTicketEvent('ticket.archived', {
+      ticket_id,
+      archived_at: now.toISOString(),
+    });
+
+    // Dispatch webhook
+    dispatchNotification({
+      event: 'ticket.archived',
+      ticket_id,
+      details: 'Ticket archived / soft-deleted',
+      timestamp: now.toISOString(),
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: `Ticket ${ticket_id} has been safely archived.`,
+        deleted_at: now.toISOString(),
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Error archiving ticket:', error);
+    return NextResponse.json(
+      { error: 'Failed to archive ticket', details: error.message },
       { status: 500 }
     );
   }

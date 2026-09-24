@@ -7,12 +7,13 @@ export interface NoteItem {
   note_text: string;
   author: string;
   is_internal: boolean;
-  activity_type?: 'comment' | 'status_change' | 'system';
+  activity_type?: 'comment' | 'status_change' | 'system' | 'sla_escalation';
   created_at: string;
 }
 
 export interface TicketItem {
   ticket_id: string;
+  organization_id?: string;
   customer_name: string;
   customer_email: string;
   subject: string;
@@ -22,6 +23,8 @@ export interface TicketItem {
   category: TicketCategory;
   attachment_url?: string | null;
   attachment_name?: string | null;
+  is_archived?: boolean;
+  deleted_at?: string | null;
   created_at: string;
   updated_at: string;
   notes_count?: number;
@@ -37,6 +40,7 @@ export interface TicketStats {
   in_progress: number;
   closed: number;
   urgent: number;
+  archived?: number;
   resolution_rate: number;
 }
 

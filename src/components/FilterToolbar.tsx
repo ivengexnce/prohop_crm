@@ -14,6 +14,7 @@ import {
   Clock,
   TrendingUp,
   Filter,
+  Archive,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -61,6 +62,7 @@ export default function FilterToolbar({
     { label: 'Open', value: 'Open', icon: Clock, countKey: 'open' },
     { label: 'In Progress', value: 'In Progress', icon: TrendingUp, countKey: 'prog' },
     { label: 'Closed', value: 'Closed', icon: CheckCircle2, countKey: 'closed' },
+    { label: 'Archived', value: 'Archived', icon: Archive, countKey: 'archived' },
   ];
 
   const hasActiveFilters =

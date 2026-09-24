@@ -380,7 +380,14 @@ export default function TicketList({
 
                     {/* Status Badge */}
                     <td className="py-3 px-3 whitespace-nowrap">
-                      {getStatusBadge(t.status)}
+                      <div className="flex items-center gap-1.5">
+                        {getStatusBadge(t.status)}
+                        {t.is_archived && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                            Archived
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Priority */}
@@ -484,7 +491,14 @@ export default function TicketList({
                     </span>
                     {getPriorityBadge(t.priority)}
                   </div>
-                  {getStatusBadge(t.status)}
+                  <div className="flex items-center gap-1.5">
+                    {getStatusBadge(t.status)}
+                    {t.is_archived && (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                        Archived
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Subject */}

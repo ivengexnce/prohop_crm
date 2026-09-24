@@ -6,8 +6,24 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const statusParam = searchParams.get('status');
     const searchParam = searchParams.get('search')?.trim();
+    const archivedParam = searchParams.get('archived');
+    const orgIdParam =
+      searchParams.get('org_id') ||
+      request.headers.get('x-organization-id') ||
+      'org_default';
 
     const where: any = {};
+
+    if (orgIdParam && orgIdParam !== 'all') {
+      where.organization_id = orgIdParam;
+    }
+
+    if (archivedParam === 'true') {
+      where.is_archived = true;
+    } else if (archivedParam !== 'all') {
+      where.is_archived = false;
+    }
+
     if (statusParam && statusParam.toLowerCase() !== 'all') {
       where.status = { equals: statusParam };
     }
@@ -31,19 +47,21 @@ export async function GET(request: NextRequest) {
 
     const headers = [
       'Ticket ID',
+      'Organization ID',
       'Customer Name',
       'Customer Email',
       'Subject',
       'Status',
       'Priority',
       'Category',
+      'Is Archived',
       'Notes Count',
       'Created At',
       'Updated At',
       'Description',
     ];
 
-    const escapeCsv = (str: string | number | undefined | null) => {
+    const escapeCsv = (str: string | number | boolean | undefined | null) => {
       if (str === null || str === undefined) return '""';
       let val = String(str);
       // Neutralize CSV formula injection (DDE attacks)
@@ -57,12 +75,14 @@ export async function GET(request: NextRequest) {
     const rows = tickets.map((t) =>
       [
         escapeCsv(t.ticket_id),
+        escapeCsv(t.organization_id),
         escapeCsv(t.customer_name),
         escapeCsv(t.customer_email),
         escapeCsv(t.subject),
         escapeCsv(t.status),
         escapeCsv(t.priority),
         escapeCsv(t.category),
+        escapeCsv(t.is_archived),
         escapeCsv(t._count.notes),
         escapeCsv(t.created_at.toISOString()),
         escapeCsv(t.updated_at.toISOString()),
@@ -77,7 +97,7 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="crm_tickets_export_${timestamp}.csv"`,
+        'Content-Disposition': `attachment; filename="prohop_tickets_export_${timestamp}.csv"`,
       },
     });
   } catch (error: any) {

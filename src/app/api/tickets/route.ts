@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getNextTicketId } from '@/lib/ticket-id';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limiter';
+import { eventHub } from '@/lib/events';
+import { dispatchNotification } from '@/lib/notifications';
 
-// GET /api/tickets?status=Open&search=john&priority=High&category=Billing&page=1&limit=20
+// GET /api/tickets?status=Open&search=john&priority=High&category=Billing&page=1&limit=20&archived=false
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -12,12 +14,29 @@ export async function GET(request: NextRequest) {
     const priorityParam = searchParams.get('priority');
     const categoryParam = searchParams.get('category');
     const sortParam = searchParams.get('sort') || 'newest';
+    const archivedParam = searchParams.get('archived'); // 'true' | 'all' | default 'false'
+    const orgIdParam =
+      searchParams.get('org_id') ||
+      request.headers.get('x-organization-id') ||
+      'org_default';
 
     const pageParam = searchParams.get('page');
     const limitParam = searchParams.get('limit');
     const shouldPaginate = pageParam !== null || limitParam !== null;
 
     const where: any = {};
+
+    // Multi-tenant organization scoping (unless 'all' specified for superadmin)
+    if (orgIdParam && orgIdParam !== 'all') {
+      where.organization_id = orgIdParam;
+    }
+
+    // Soft-delete data archival scoping: exclude archived tickets by default
+    if (archivedParam === 'true') {
+      where.is_archived = true;
+    } else if (archivedParam !== 'all') {
+      where.is_archived = false;
+    }
 
     // Filter by status (unless 'all' or empty)
     if (statusParam && statusParam.toLowerCase() !== 'all') {
@@ -80,6 +99,7 @@ export async function GET(request: NextRequest) {
     // Format response compliant with spec + rich helper fields
     const formatted = tickets.map((t) => ({
       ticket_id: t.ticket_id,
+      organization_id: t.organization_id,
       customer_name: t.customer_name,
       customer_email: t.customer_email,
       subject: t.subject,
@@ -89,6 +109,8 @@ export async function GET(request: NextRequest) {
       category: t.category,
       attachment_url: t.attachment_url,
       attachment_name: t.attachment_name,
+      is_archived: t.is_archived,
+      deleted_at: t.deleted_at ? t.deleted_at.toISOString() : null,
       created_at: t.created_at.toISOString(),
       updated_at: t.updated_at.toISOString(),
       notes_count: t._count.notes,
@@ -157,6 +179,7 @@ export async function POST(request: NextRequest) {
       category = 'General',
       attachment_url = null,
       attachment_name = null,
+      organization_id = request.headers.get('x-organization-id') || 'org_default',
     } = body;
 
     // Strict Validation: ensure string type and non-whitespace content
@@ -187,39 +210,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Auto-generate unique Ticket ID with concurrency collision retry handling
-    let newTicket: any = null;
-    let attempts = 0;
-    const maxAttempts = 8;
+    // Auto-generate monotonic, collision-free Ticket ID via atomic Sequence transaction
+    const ticket_id = await getNextTicketId();
+    const newTicket = await prisma.ticket.create({
+      data: {
+        ticket_id,
+        organization_id: (organization_id || 'org_default').trim(),
+        customer_name: customer_name.trim(),
+        customer_email: customer_email.trim().toLowerCase(),
+        subject: subject.trim(),
+        description: description.trim(),
+        status: 'Open',
+        priority: priority || 'Medium',
+        category: category || 'General',
+        attachment_url: attachment_url || null,
+        attachment_name: attachment_name || null,
+      },
+    });
 
-    while (attempts < maxAttempts) {
-      attempts++;
-      try {
-        const ticket_id = await getNextTicketId();
-        newTicket = await prisma.ticket.create({
-          data: {
-            ticket_id,
-            customer_name: customer_name.trim(),
-            customer_email: customer_email.trim().toLowerCase(),
-            subject: subject.trim(),
-            description: description.trim(),
-            status: 'Open',
-            priority: priority || 'Medium',
-            category: category || 'General',
-            attachment_url: attachment_url || null,
-            attachment_name: attachment_name || null,
-          },
-        });
-        break;
-      } catch (err: any) {
-        // Retry on unique constraint collision under concurrent bursts
-        if (err.code === 'P2002' && attempts < maxAttempts) {
-          await new Promise((resolve) => setTimeout(resolve, Math.random() * 80 + 30));
-          continue;
-        }
-        throw err;
-      }
-    }
+    // Real-Time Event Notification (SSE stream to connected browser agents)
+    eventHub.emitTicketEvent('ticket.created', {
+      ticket_id: newTicket.ticket_id,
+      customer_name: newTicket.customer_name,
+      subject: newTicket.subject,
+      priority: newTicket.priority,
+      status: newTicket.status,
+      created_at: newTicket.created_at.toISOString(),
+    });
+
+    // Outbound Webhook Dispatch (non-blocking)
+    dispatchNotification({
+      event: 'ticket.created',
+      ticket_id: newTicket.ticket_id,
+      customer_name: newTicket.customer_name,
+      subject: newTicket.subject,
+      priority: newTicket.priority,
+      status: newTicket.status,
+      timestamp: newTicket.created_at.toISOString(),
+    });
 
     // Return exact response format specified in prompt:
     // { "ticket_id": "TKT-001", "created_at": "2026-09-23T10:30:00" }

@@ -159,6 +159,9 @@ function DashboardContent() {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
+  // Real-Time Server-Sent Events (SSE) live synchronization
+  const [isLiveConnected, setIsLiveConnected] = useState(false);
+
   // Fetch KPI Stats
   const fetchStats = useCallback(async () => {
     try {
@@ -182,7 +185,11 @@ function DashboardContent() {
       const params = new URLSearchParams();
 
       if (statusFilter && statusFilter !== 'All') {
-        params.append('status', statusFilter);
+        if (statusFilter === 'Archived') {
+          params.append('archived', 'true');
+        } else {
+          params.append('status', statusFilter);
+        }
       }
       if (priorityFilter && priorityFilter !== 'All') {
         params.append('priority', priorityFilter);
@@ -244,6 +251,59 @@ function DashboardContent() {
     fetchStats();
   }, [fetchStats]);
 
+  // Real-Time Server-Sent Events (SSE) live updates
+  useEffect(() => {
+    let eventSource: EventSource | null = null;
+    let reconnectTimeout: NodeJS.Timeout;
+
+    const connectSSE = () => {
+      try {
+        eventSource = new EventSource('/api/events');
+
+        eventSource.onopen = () => {
+          setIsLiveConnected(true);
+        };
+
+        const handleEvent = (event: MessageEvent) => {
+          try {
+            const payload = JSON.parse(event.data);
+            if (payload && payload.type) {
+              fetchTickets();
+              fetchStats();
+              if (payload.type === 'ticket.created') {
+                showToast('info', 'New Incident Arrived', `Ticket ${payload.data?.ticket_id || ''} created`);
+              } else if (payload.type === 'ticket.escalated') {
+                showToast('warning', '🚨 SLA Escalation Triggered', `Ticket ${payload.data?.ticket_id || ''} elevated to Urgent`);
+              }
+            }
+          } catch {
+            // Heartbeat
+          }
+        };
+
+        eventSource.addEventListener('ticket.created', handleEvent);
+        eventSource.addEventListener('ticket.updated', handleEvent);
+        eventSource.addEventListener('ticket.archived', handleEvent);
+        eventSource.addEventListener('ticket.escalated', handleEvent);
+
+        eventSource.onerror = () => {
+          setIsLiveConnected(false);
+          eventSource?.close();
+          reconnectTimeout = setTimeout(connectSSE, 5000);
+        };
+      } catch {
+        setIsLiveConnected(false);
+      }
+    };
+
+    connectSSE();
+
+    return () => {
+      clearTimeout(reconnectTimeout);
+      eventSource?.close();
+    };
+  }, [fetchTickets, fetchStats, showToast]);
+
   // Handle Quick Status Change from row or kanban card
   const handleQuickStatusChange = async (ticketId: string, newStatus: TicketStatus) => {
     try {
@@ -276,7 +336,13 @@ function DashboardContent() {
     try {
       setIsExporting(true);
       const params = new URLSearchParams();
-      if (statusFilter && statusFilter !== 'All') params.append('status', statusFilter);
+      if (statusFilter && statusFilter !== 'All') {
+        if (statusFilter === 'Archived') {
+          params.append('archived', 'true');
+        } else {
+          params.append('status', statusFilter);
+        }
+      }
       if (debouncedSearch.trim()) params.append('search', debouncedSearch.trim());
 
       const res = await fetch(`/api/export?${params.toString()}`);
@@ -286,7 +352,7 @@ function DashboardContent() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `crm_tickets_${new Date().toISOString().split('T')[0]}.csv`;
+      a.download = `prohop_tickets_${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -360,6 +426,7 @@ function DashboardContent() {
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         isSeeding={isSeeding}
+        isLiveConnected={isLiveConnected}
       />
 
       {/* Main Container */}
