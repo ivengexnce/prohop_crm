@@ -22,6 +22,7 @@ import {
   Layers,
   Shield,
   LifeBuoy,
+  Zap,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -133,6 +134,10 @@ function DashboardContent() {
         setPriorityFilter('All');
         setCurrentPage(1);
       }
+      // E: Export
+      else if (e.key.toLowerCase() === 'e') {
+        handleExportCsv();
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -145,12 +150,12 @@ function DashboardContent() {
     isShortcutsOpen,
   ]);
 
-  // Debounce search input by 300ms
+  // Debounce search input by 280ms
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchQuery);
       setCurrentPage(1);
-    }, 300);
+    }, 280);
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
@@ -287,7 +292,7 @@ function DashboardContent() {
       a.remove();
       window.URL.revokeObjectURL(url);
 
-      showToast('success', 'Export Complete', 'Downloaded filtered tickets as CSV');
+      showToast('success', 'Export Complete', 'Downloaded filtered tickets as RFC 4180 CSV');
     } catch (err: any) {
       showToast('error', 'CSV Export Failed', err.message);
     } finally {
@@ -363,21 +368,21 @@ function DashboardContent() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-7"
         >
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-sans">
                 Support Command Center
               </h1>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-2xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 24h Target SLA
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-              Orchestrate customer tickets, coordinate team investigation notes, enforce SLAs, and monitor resolution workflows in real-time.
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl leading-relaxed">
+              High-throughput incident triage, automated SLA enforcement, and real-time team workflow orchestration.
             </p>
           </div>
 
@@ -387,26 +392,24 @@ function DashboardContent() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl glass-panel text-xs font-semibold text-slate-300 hover:text-white hover:border-indigo-500/40 shadow-xs cursor-pointer"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-900/90 border border-white/[0.08] hover:border-white/20 text-xs font-medium text-zinc-300 hover:text-white transition-all cursor-pointer"
             >
               <Command className="w-3.5 h-3.5 text-indigo-400" />
               <span className="hidden sm:inline">Commands</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400 border border-slate-700">
-                ⌘K
-              </kbd>
+              <kbd className="kbd-badge">⌘K</kbd>
             </motion.button>
 
             {/* New Ticket CTA */}
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setIsCreateModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-xl shadow-lg shadow-indigo-600/30 border border-indigo-400/30 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md shadow-indigo-600/25 border border-indigo-400/30 transition-all cursor-pointer"
             >
               <span>+ New Ticket</span>
-              <span className="hidden sm:inline text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono font-normal">
+              <kbd className="hidden sm:inline text-[10px] bg-indigo-700/60 px-1.5 py-0.2 rounded font-mono font-medium border border-indigo-400/30 text-indigo-100">
                 N
-              </span>
+              </kbd>
             </motion.button>
           </div>
         </motion.div>
@@ -473,20 +476,20 @@ function DashboardContent() {
 
               {/* Server-Side Pagination Bar */}
               {totalCount > 0 && (
-                <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl glass-panel shadow-md text-xs text-slate-400">
+                <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 p-3.5 sm:p-4 rounded-2xl glass-panel shadow-md text-xs text-zinc-400">
                   <div className="flex items-center gap-2">
                     <span>
                       Showing{' '}
-                      <strong className="text-white font-semibold">
+                      <strong className="text-zinc-200 font-semibold font-mono">
                         {(currentPage - 1) * pageSize + 1}
                       </strong>{' '}
                       to{' '}
-                      <strong className="text-white font-semibold">
+                      <strong className="text-zinc-200 font-semibold font-mono">
                         {Math.min(currentPage * pageSize, totalCount)}
                       </strong>{' '}
-                      of <strong className="text-white font-semibold">{totalCount}</strong> tickets
+                      of <strong className="text-zinc-200 font-semibold font-mono">{totalCount}</strong> tickets
                     </span>
-                    <span className="text-slate-600">|</span>
+                    <span className="text-zinc-600">|</span>
                     <div className="flex items-center gap-1.5">
                       <span>Per page:</span>
                       <select
@@ -495,7 +498,7 @@ function DashboardContent() {
                           setPageSize(Number(e.target.value));
                           setCurrentPage(1);
                         }}
-                        className="bg-slate-900 border border-white/[0.08] rounded-lg px-2 py-0.5 text-slate-300 focus:outline-none cursor-pointer"
+                        className="bg-zinc-900 border border-white/[0.08] hover:border-white/20 rounded-lg px-2 py-0.5 text-zinc-200 focus:outline-none cursor-pointer"
                       >
                         <option value={10}>10</option>
                         <option value={25}>25</option>
@@ -505,16 +508,16 @@ function DashboardContent() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-400">
-                      Page <strong className="text-white">{currentPage}</strong> of{' '}
-                      <strong className="text-white">{totalPages}</strong>
+                    <span className="text-zinc-400 font-mono">
+                      Page <strong className="text-zinc-200">{currentPage}</strong> of{' '}
+                      <strong className="text-zinc-200">{totalPages}</strong>
                     </span>
                     <div className="flex items-center gap-1 ml-2">
                       <button
                         type="button"
                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                         disabled={currentPage <= 1 || isLoadingTickets}
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
                         title="Previous Page"
                       >
                         <ChevronLeft className="w-4 h-4" />
@@ -523,7 +526,7 @@ function DashboardContent() {
                         type="button"
                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                         disabled={currentPage >= totalPages || isLoadingTickets}
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
                         title="Next Page"
                       >
                         <ChevronRight className="w-4 h-4" />
@@ -600,15 +603,15 @@ function DashboardContent() {
       />
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.08] bg-slate-950/60 py-6 text-center text-xs text-slate-500 mt-16 backdrop-blur-md">
+      <footer className="border-t border-white/[0.08] bg-[#090a0f]/80 py-6 text-center text-xs text-zinc-500 mt-16 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="font-medium text-slate-400">
+          <p className="font-medium text-zinc-400">
             NexusCRM Enterprise Ops Platform &bull; Production Architecture
           </p>
-          <div className="flex items-center gap-3 text-slate-400">
-            <span className="flex items-center gap-1 text-slate-400">
+          <div className="flex items-center gap-3 text-zinc-400">
+            <span className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-400">
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              Next.js 16 + React 19 + Tailwind v4 + Motion
+              Obsidian Craft &bull; Motion Physics &bull; Anime.js Telemetry
             </span>
           </div>
         </div>
