@@ -65,39 +65,39 @@ export default function StatsCards({
       value: openCount,
       icon: Clock3,
       filter: 'Open',
-      spotlightColor: 'rgba(16, 185, 129, 0.12)',
-      accentDot: 'bg-emerald-500',
+      spotlightColor: 'rgba(245, 158, 11, 0.14)',
+      accentDot: 'bg-amber-500',
       badge: `${openPct}% queue`,
       shortcut: '1',
       description: 'Awaiting triage & response',
       pct: openPct,
-      sparkColor: 'bg-emerald-500',
+      sparkColor: 'bg-amber-500',
     },
     {
       title: 'In Progress',
       value: inProgressCount,
       icon: TrendingUp,
       filter: 'In Progress',
-      spotlightColor: 'rgba(245, 158, 11, 0.12)',
-      accentDot: 'bg-amber-500',
+      spotlightColor: 'rgba(14, 165, 233, 0.14)',
+      accentDot: 'bg-sky-500',
       badge: `${inProgressPct}% active`,
       shortcut: '2',
       description: 'Investigation underway',
       pct: inProgressPct,
-      sparkColor: 'bg-amber-500',
+      sparkColor: 'bg-sky-500',
     },
     {
       title: 'Resolved / Closed',
       value: closedCount,
       icon: CheckCircle2,
       filter: 'Closed',
-      spotlightColor: 'rgba(139, 92, 246, 0.12)',
-      accentDot: 'bg-purple-500',
+      spotlightColor: 'rgba(16, 185, 129, 0.14)',
+      accentDot: 'bg-emerald-500',
       badge: `${resolutionRate}% settled`,
       shortcut: '3',
       description: 'Successfully verified',
       pct: resolutionRate,
-      sparkColor: 'bg-purple-500',
+      sparkColor: 'bg-emerald-500',
     },
     {
       title: 'Urgent SLA Risk',
@@ -257,7 +257,7 @@ export default function StatsCards({
           <div className="h-2 w-full bg-zinc-800/80 rounded-full overflow-hidden flex shadow-inner">
             <motion.div
               style={{ width: `${openPct}%` }}
-              className="bg-emerald-500 h-full relative"
+              className="bg-amber-500 h-full relative"
               title={`Open: ${openCount} (${openPct}%)`}
               initial={{ width: 0 }}
               animate={{ width: `${openPct}%` }}
@@ -265,7 +265,7 @@ export default function StatsCards({
             />
             <motion.div
               style={{ width: `${inProgressPct}%` }}
-              className="bg-amber-500 h-full relative"
+              className="bg-sky-500 h-full relative"
               title={`In Progress: ${inProgressCount} (${inProgressPct}%)`}
               initial={{ width: 0 }}
               animate={{ width: `${inProgressPct}%` }}
@@ -273,7 +273,7 @@ export default function StatsCards({
             />
             <motion.div
               style={{ width: `${closedPct}%` }}
-              className="bg-purple-500 h-full relative"
+              className="bg-emerald-500 h-full relative"
               title={`Closed: ${closedCount} (${closedPct}%)`}
               initial={{ width: 0 }}
               animate={{ width: `${closedPct}%` }}
@@ -284,23 +284,23 @@ export default function StatsCards({
           <div className="flex items-center justify-between text-[10px] text-zinc-400 font-semibold">
             <button
               onClick={() => onSelectStatus('Open')}
-              className="flex items-center gap-1 hover:text-emerald-500 transition-colors cursor-pointer"
+              className="flex items-center gap-1 hover:text-amber-500 transition-colors cursor-pointer"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
               Open: {openPct}% ({openCount})
             </button>
             <button
               onClick={() => onSelectStatus('In Progress')}
-              className="flex items-center gap-1 hover:text-amber-500 transition-colors cursor-pointer"
+              className="flex items-center gap-1 hover:text-sky-500 transition-colors cursor-pointer"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
               In Progress: {inProgressPct}% ({inProgressCount})
             </button>
             <button
               onClick={() => onSelectStatus('Closed')}
-              className="flex items-center gap-1 hover:text-purple-500 transition-colors cursor-pointer"
+              className="flex items-center gap-1 hover:text-emerald-500 transition-colors cursor-pointer"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Closed: {closedPct}% ({closedCount})
             </button>
           </div>

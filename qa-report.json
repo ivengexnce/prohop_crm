@@ -1,6 +1,6 @@
 {
   "appName": "ProHop CRM",
-  "auditDate": "2026-09-24T08:49:53.985Z",
+  "auditDate": "2026-09-24T09:32:30.667Z",
   "total": 27,
   "passed": 27,
   "failed": 0,
@@ -10,105 +10,105 @@
       "name": "POST /api/tickets - Create valid ticket with sequential ID",
       "category": "Functional",
       "status": "PASS",
-      "duration": "112ms",
-      "details": "Created ID: TKT-041"
+      "duration": "74ms",
+      "details": "Created ID: TKT-076"
     },
     {
       "name": "GET /api/tickets - List all tickets (backward compatible array)",
       "category": "Functional",
       "status": "PASS",
-      "duration": "97ms",
-      "details": "Total records: 40"
+      "duration": "35ms",
+      "details": "Total records: 73"
     },
     {
       "name": "GET /api/tickets?page=1&limit=5 - Server-side pagination metadata",
       "category": "Functional",
       "status": "PASS",
-      "duration": "29ms",
-      "details": "Returned 5 items of 40 total across 8 pages"
+      "duration": "16ms",
+      "details": "Returned 5 items of 73 total across 15 pages"
     },
     {
       "name": "GET /api/tickets?status=Open - Filter tickets by lifecycle status",
       "category": "Functional",
       "status": "PASS",
-      "duration": "24ms",
-      "details": "Verified 33 Open tickets returned"
+      "duration": "32ms",
+      "details": "Verified 52 Open tickets returned"
     },
     {
       "name": "GET /api/tickets?priority=Urgent - Filter tickets by Urgent SLA priority",
       "category": "Functional",
       "status": "PASS",
-      "duration": "25ms",
-      "details": "Verified 37 Urgent tickets returned"
+      "duration": "17ms",
+      "details": "Verified 71 Urgent tickets returned"
     },
     {
       "name": "GET /api/tickets/{id} - Retrieve created ticket details",
       "category": "Functional",
       "status": "PASS",
-      "duration": "62ms",
-      "details": "Retrieved TKT-041 with 0 notes"
+      "duration": "39ms",
+      "details": "Retrieved TKT-076 with 0 notes"
     },
     {
       "name": "PUT /api/tickets/{id} - Transition status & verify audit logging",
       "category": "Functional",
       "status": "PASS",
-      "duration": "71ms",
+      "duration": "65ms",
       "details": "Status updated to In Progress, audit log recorded: \"Status changed from \"Open\" to \"In Progress\"\""
     },
     {
       "name": "POST /api/upload - File attachment upload validation",
       "category": "Functional",
       "status": "PASS",
-      "duration": "158ms",
-      "details": "Uploaded checkout_error.log -> /uploads/1790239794567_checkout_error.log (48 bytes)"
+      "duration": "32ms",
+      "details": "Uploaded checkout_error.log -> /uploads/1790242350979_checkout_error.log (48 bytes)"
     },
     {
       "name": "GET /api/stats - Verify KPI calculations",
       "category": "Functional",
       "status": "PASS",
-      "duration": "31ms",
-      "details": "Total: 40 (Open: 32, InProg: 6, Closed: 2, Rate: 5%)"
+      "duration": "27ms",
+      "details": "Total: 73 (Open: 51, InProg: 21, Closed: 1, Rate: 1%)"
     },
     {
       "name": "GET /api/export - Verify RFC 4180 CSV Export",
       "category": "Functional",
       "status": "PASS",
-      "duration": "117ms",
-      "details": "CSV size: 8668 bytes, Records: 32"
+      "duration": "17ms",
+      "details": "CSV size: 13528 bytes, Records: 51"
     },
     {
       "name": "GET /api/docs - REST API Explorer endpoints schema verification",
       "category": "Functional",
       "status": "PASS",
-      "duration": "257ms",
+      "duration": "98ms",
       "details": "Verified 7 documented API endpoints"
     },
     {
       "name": "POST /api/tickets - Rejects missing customer_name (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "29ms",
+      "duration": "30ms",
       "details": "Correctly returned 400 Bad Request"
     },
     {
       "name": "POST /api/tickets - Rejects invalid email format (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "16ms",
+      "duration": "13ms",
       "details": "Correctly caught invalid email"
     },
     {
       "name": "POST /api/tickets - Rejects empty subject string (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "26ms",
+      "duration": "25ms",
       "details": "Correctly rejected whitespace-only subject"
     },
     {
       "name": "GET /api/tickets/{id} - Returns 404 for non-existent ticket",
       "category": "Validation",
       "status": "PASS",
-      "duration": "39ms",
+      "duration": "18ms",
       "details": "Correctly returned 404 Not Found"
     },
     {
@@ -122,96 +122,96 @@
       "name": "PUT /api/tickets/{id} - Rejects invalid status string (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "32ms",
+      "duration": "29ms",
       "details": "Correctly validated status enum"
     },
     {
       "name": "POST /api/tickets - XSS payload sanitized / properly stored",
       "category": "Security",
       "status": "PASS",
-      "duration": "132ms",
+      "duration": "51ms",
       "details": "Payload stored intact; React JSX safely escapes rendered HTML"
     },
     {
       "name": "GET /api/tickets - SQL Injection substring safety",
       "category": "Security",
       "status": "PASS",
-      "duration": "21ms",
+      "duration": "26ms",
       "details": "Query executed safely via Prisma parameterization. Matched 0 records."
     },
     {
       "name": "CSV Formula Injection sanitized with apostrophe prefix",
       "category": "Security",
       "status": "PASS",
-      "duration": "59ms",
+      "duration": "61ms",
       "details": "Formula successfully neutralized with apostrophe escape prefix (')"
     },
     {
       "name": "Concurrent Burst: 12 simultaneous ticket creations with retry backoff",
       "category": "Concurrency",
       "status": "PASS",
-      "duration": "843ms",
+      "duration": "601ms",
       "details": "All 12 concurrent IDs generated cleanly with 0 collisions."
     },
     {
       "name": "Frontend Branding Audit: Title, Metadata, ProHop identifiers",
       "category": "Frontend",
       "status": "PASS",
-      "duration": "94ms",
+      "duration": "77ms",
       "details": "HTML confirmed contains ProHop brand tokens, viewport, and semantic structure"
     },
     {
       "name": "Rectification 1: Pluggable Storage Provider & File Metadata",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "19ms",
-      "details": "Provider: local, URL: /uploads/1790239797740_architecture-test.txt"
+      "duration": "28ms",
+      "details": "Provider: local, URL: /uploads/1790242352899_architecture-test.txt"
     },
     {
       "name": "Rectification 4: Soft Delete, Archival & Restore Workflow",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "1651ms",
-      "details": "Successfully soft-deleted, verified query isolation, and restored TKT-056"
+      "duration": "151ms",
+      "details": "Successfully soft-deleted, verified query isolation, and restored TKT-091"
     },
     {
       "name": "Rectification 7: Multi-Tenant Organization Scoping & Isolation",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "228ms",
+      "duration": "101ms",
       "details": "Tenant isolation confirmed: Ticket visible to org_finance and hidden from org_engineering."
     },
     {
       "name": "Rectification 6: Server-Sent Events (SSE) Live Stream Handshake",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "34ms",
+      "duration": "29ms",
       "details": "Real-time SSE event stream handshake established with initial connected payload."
     },
     {
       "name": "Rectification 8: Automated SLA Escalation Cron Daemon Execution",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "1235ms",
+      "duration": "174ms",
       "details": "SLA daemon scanned 17 tickets and successfully escalated 17 at-risk tickets."
     }
   ],
   "benchmarks": {
     "GET /api/tickets (Paginated)": {
-      "avgMs": 81,
-      "maxMs": 98
+      "avgMs": 27,
+      "maxMs": 47
     },
     "GET /api/stats": {
-      "avgMs": 30,
-      "maxMs": 35
+      "avgMs": 27,
+      "maxMs": 34
     },
     "GET /api/export": {
-      "avgMs": 30,
-      "maxMs": 39
+      "avgMs": 26,
+      "maxMs": 33
     },
     "GET /api/docs": {
-      "avgMs": 144,
-      "maxMs": 180
+      "avgMs": 77,
+      "maxMs": 100
     }
   },
   "drawbacksDocumented": []

@@ -297,7 +297,13 @@ export default function TicketList({
     <div className="relative">
       <div className="glass-panel rounded-2xl overflow-hidden shadow-2xl">
         {/* Navigation keyboard hint toolbar */}
-        <div className="hidden lg:flex items-center justify-between px-4 py-2 bg-zinc-950/40 border-b border-white/[0.06] text-[11px] text-zinc-400 font-mono">
+        <div
+          className={`hidden lg:flex items-center justify-between px-4 py-2 border-b text-[11px] font-mono transition-colors ${
+            isLight
+              ? 'bg-slate-50/95 border-slate-200/80 text-slate-600'
+              : 'bg-zinc-950/40 border-white/[0.06] text-zinc-400'
+          }`}
+        >
           <div className="flex items-center gap-3">
             <span>
               Use <kbd className="kbd-badge">J</kbd> / <kbd className="kbd-badge">K</kbd> to navigate
@@ -312,7 +318,7 @@ export default function TicketList({
             </span>
           </div>
           {highlightedIndex >= 0 && (
-            <span className="text-indigo-400 font-medium">
+            <span className={`${isLight ? 'text-indigo-600 font-semibold' : 'text-indigo-400 font-medium'}`}>
               Active: {tickets[highlightedIndex]?.ticket_id} ({highlightedIndex + 1}/{tickets.length})
             </span>
           )}
@@ -322,7 +328,13 @@ export default function TicketList({
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs sm:text-sm min-w-[1020px]">
             <thead>
-              <tr className="border-b border-white/[0.08] bg-zinc-950/70 text-zinc-400 font-semibold uppercase tracking-wider text-[10px]">
+              <tr
+                className={`border-b font-semibold uppercase tracking-wider text-[10px] transition-colors ${
+                  isLight
+                    ? 'bg-slate-100/90 border-slate-200/90 text-slate-600'
+                    : 'border-white/[0.08] bg-zinc-950/70 text-zinc-400'
+                }`}
+              >
                 <th className="py-3 pl-4 pr-2 w-10 text-center">
                   <button
                     onClick={toggleSelectAll}
@@ -346,7 +358,7 @@ export default function TicketList({
                 <th className="py-3 pr-4 pl-2.5 text-right w-32">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className={`divide-y ${isLight ? 'divide-slate-200/70' : 'divide-white/[0.04]'}`}>
               {tickets.map((t, idx) => {
                 const sla = getSlaStatus(t.created_at, t.status);
                 const isSelected = selectedIds.includes(t.ticket_id);
@@ -361,15 +373,26 @@ export default function TicketList({
                     onClick={() => onSelectTicket(t.ticket_id)}
                     className={`group cursor-pointer transition-all duration-150 ${
                       isSelected
-                        ? 'bg-indigo-950/30'
+                        ? isLight
+                          ? 'bg-indigo-50/90 ring-1 ring-inset ring-indigo-300'
+                          : 'bg-indigo-950/30'
                         : isHighlighted
-                        ? 'bg-zinc-800/80 ring-1 ring-inset ring-indigo-500/50'
+                        ? isLight
+                          ? 'bg-indigo-50/70 ring-1 ring-inset ring-indigo-400/50'
+                          : 'bg-zinc-800/80 ring-1 ring-inset ring-indigo-500/50'
+                        : isLight
+                        ? 'hover:bg-slate-50/90'
                         : 'hover:bg-zinc-800/40'
                     }`}
                   >
                     {/* Checkbox */}
                     <td className="py-3 pl-4 pr-2 w-10 text-center" onClick={(e) => toggleSelect(t.ticket_id, e)}>
-                      <button className="text-zinc-400 hover:text-white cursor-pointer inline-flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={(e) => toggleSelect(t.ticket_id, e)}
+                        className="text-zinc-400 hover:text-white cursor-pointer inline-flex items-center justify-center"
+                        aria-label={`Select ticket ${t.ticket_id}`}
+                      >
                         {isSelected ? (
                           <CheckSquare className="w-4 h-4 text-indigo-400" />
                         ) : (
@@ -498,7 +521,11 @@ export default function TicketList({
                             onChange={(e) =>
                               onQuickStatusChange(t.ticket_id, e.target.value as TicketStatus)
                             }
-                            className="bg-zinc-900 border border-zinc-700/80 hover:border-white/20 rounded-lg px-2 py-1 text-xs text-zinc-200 focus:outline-none cursor-pointer"
+                            className={`rounded-lg px-2 py-1 text-xs focus:outline-none cursor-pointer transition-colors ${
+                              isLight
+                                ? 'bg-white border border-slate-300 text-slate-800 hover:border-slate-400 shadow-2xs'
+                                : 'bg-zinc-900 border border-zinc-700/80 text-zinc-200 hover:border-white/20'
+                            }`}
                           >
                             <option value="Open">Set Open</option>
                             <option value="In Progress">Set In Prog</option>
@@ -508,7 +535,11 @@ export default function TicketList({
 
                         <button
                           onClick={() => onSelectTicket(t.ticket_id)}
-                          className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-all cursor-pointer"
+                          className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                            isLight
+                              ? 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+                              : 'bg-zinc-800/80 hover:bg-zinc-700 text-zinc-400 hover:text-white'
+                          }`}
                           title="Open Ticket Details (Enter)"
                         >
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -523,7 +554,7 @@ export default function TicketList({
         </div>
 
         {/* ─── Mobile Responsive Cards View (< md) ─────────────────────────── */}
-        <div className="block md:hidden divide-y divide-white/[0.06]">
+        <div className={`block md:hidden divide-y ${isLight ? 'divide-slate-200/80' : 'divide-white/[0.06]'}`}>
           {tickets.map((t) => {
             const sla = getSlaStatus(t.created_at, t.status);
             const isSelected = selectedIds.includes(t.ticket_id);
@@ -533,7 +564,13 @@ export default function TicketList({
                 key={t.ticket_id}
                 onClick={() => onSelectTicket(t.ticket_id)}
                 className={`p-4 transition-colors cursor-pointer ${
-                  isSelected ? 'bg-indigo-950/30' : 'hover:bg-zinc-800/40'
+                  isSelected
+                    ? isLight
+                      ? 'bg-indigo-50/80'
+                      : 'bg-indigo-950/30'
+                    : isLight
+                    ? 'hover:bg-slate-50'
+                    : 'hover:bg-zinc-800/40'
                 }`}
               >
                 {/* Header */}
@@ -595,7 +632,11 @@ export default function TicketList({
                     onChange={(e) =>
                       onQuickStatusChange(t.ticket_id, e.target.value as TicketStatus)
                     }
-                    className="bg-zinc-900 border border-zinc-700/80 rounded-lg px-2 py-1 text-xs text-zinc-200 focus:outline-none"
+                    className={`rounded-lg px-2 py-1 text-xs focus:outline-none ${
+                      isLight
+                        ? 'bg-white border border-slate-300 text-slate-800'
+                        : 'bg-zinc-900 border border-zinc-700/80 text-zinc-200'
+                    }`}
                   >
                     <option value="Open">Set Open</option>
                     <option value="In Progress">Set In Progress</option>

@@ -3,6 +3,7 @@
 import React from 'react';
 import { X, Keyboard, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useTheme } from '@/lib/theme-context';
 
 interface ShortcutsModalProps {
   isOpen: boolean;
@@ -10,6 +11,9 @@ interface ShortcutsModalProps {
 }
 
 export default function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+
   if (!isOpen) return null;
 
   const shortcuts = [
@@ -38,21 +42,43 @@ export default function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps)
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-lg bg-zinc-950 border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10"
+        className={`w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden ring-1 transition-colors ${
+          isLight
+            ? 'bg-white border border-slate-200 text-slate-900 ring-slate-900/10'
+            : 'bg-zinc-950 border border-white/[0.12] text-zinc-100 ring-white/10'
+        }`}
       >
-        <div className="flex items-center justify-between p-5 border-b border-white/[0.08] bg-zinc-950/80">
+        <div
+          className={`flex items-center justify-between p-5 border-b transition-colors ${
+            isLight ? 'bg-slate-50 border-slate-200' : 'bg-zinc-950/80 border-white/[0.08]'
+          }`}
+        >
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-zinc-900 border border-white/[0.1] text-indigo-400">
+            <div
+              className={`p-2 rounded-xl transition-colors ${
+                isLight
+                  ? 'bg-indigo-50 border border-indigo-200 text-indigo-600'
+                  : 'bg-zinc-900 border border-white/[0.1] text-indigo-400'
+              }`}
+            >
               <Keyboard className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Keyboard Navigation</h2>
-              <p className="text-xs text-zinc-400">Linear-style power user shortcuts</p>
+              <h2 className={`text-base font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                Keyboard Navigation
+              </h2>
+              <p className={`text-xs ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
+                Linear-style power user shortcuts
+              </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+              isLight
+                ? 'text-slate-400 hover:text-slate-800 hover:bg-slate-100'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+            }`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -62,9 +88,17 @@ export default function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps)
           {shortcuts.map((sc) => (
             <div
               key={sc.key}
-              className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/60 border border-white/[0.06] hover:bg-zinc-800/60 transition-colors"
+              className={`flex items-center justify-between p-2.5 rounded-xl border transition-colors ${
+                isLight
+                  ? 'bg-slate-50/80 border-slate-200/80 hover:bg-slate-100/80'
+                  : 'bg-zinc-900/60 border border-white/[0.06] hover:bg-zinc-800/60'
+              }`}
             >
-              <span className="text-xs sm:text-sm text-zinc-300 font-medium">
+              <span
+                className={`text-xs sm:text-sm font-medium ${
+                  isLight ? 'text-slate-700' : 'text-zinc-300'
+                }`}
+              >
                 {sc.description}
               </span>
               <kbd className="kbd-badge">{sc.key}</kbd>
@@ -72,14 +106,28 @@ export default function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps)
           ))}
         </div>
 
-        <div className="p-4 bg-zinc-950/80 border-t border-white/[0.08] flex items-center justify-between text-xs text-zinc-400">
-          <span className="flex items-center gap-1.5 text-zinc-400 font-mono text-[11px]">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+        <div
+          className={`p-4 border-t flex items-center justify-between text-xs transition-colors ${
+            isLight
+              ? 'bg-slate-50 border-slate-200 text-slate-500'
+              : 'bg-zinc-950/80 border-white/[0.08] text-zinc-400'
+          }`}
+        >
+          <span
+            className={`flex items-center gap-1.5 font-mono text-[11px] ${
+              isLight ? 'text-slate-500' : 'text-zinc-400'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
             Sub-millisecond keyboard response
           </span>
           <button
             onClick={onClose}
-            className="px-3.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold transition-colors cursor-pointer"
+            className={`px-3.5 py-1.5 rounded-xl font-semibold transition-colors cursor-pointer ${
+              isLight
+                ? 'bg-slate-200 hover:bg-slate-300 text-slate-800'
+                : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200'
+            }`}
           >
             Done (Esc)
           </button>
