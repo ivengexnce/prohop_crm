@@ -8,23 +8,28 @@ generator client {
 }
 
 model Ticket {
-  id              Int      @id @default(autoincrement())
-  ticket_id       String   @unique
+  id              Int       @id @default(autoincrement())
+  ticket_id       String    @unique
+  organization_id String    @default("org_default")
   customer_name   String
   customer_email  String
   subject         String
   description     String
-  status          String   @default("Open") // "Open" | "In Progress" | "Closed"
-  priority        String   @default("Medium") // "Low" | "Medium" | "High" | "Urgent"
-  category        String   @default("General") // "General" | "Technical" | "Billing" | "Feature Request"
+  status          String    @default("Open") // "Open" | "In Progress" | "Closed"
+  priority        String    @default("Medium") // "Low" | "Medium" | "High" | "Urgent"
+  category        String    @default("General") // "General" | "Technical" | "Billing" | "Feature Request"
   attachment_url  String?
   attachment_name String?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  is_archived     Boolean   @default(false)
+  deleted_at      DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
   notes           Note[]
 
   @@index([status])
   @@index([created_at])
+  @@index([organization_id])
+  @@index([is_archived])
 }
 
 model Note {
@@ -34,8 +39,14 @@ model Note {
   note_text     String
   author        String   @default("Support Agent")
   is_internal   Boolean  @default(false)
-  activity_type String   @default("comment") // "comment" | "status_change" | "system"
+  activity_type String   @default("comment") // "comment" | "status_change" | "system" | "sla_escalation"
   created_at    DateTime @default(now())
 
   @@index([ticket_id])
+}
+
+model Sequence {
+  name       String   @id
+  value      Int      @default(0)
+  updated_at DateTime @updatedAt
 }
