@@ -37,6 +37,7 @@ export default function Navbar({
   isLiveConnected = true,
 }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
+  const isLight = theme === 'light';
 
   return (
     <motion.header
@@ -52,22 +53,26 @@ export default function Navbar({
             <motion.div
               whileHover={{ rotate: 10, scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-              className="w-9 h-9 rounded-xl bg-zinc-900 border border-white/[0.12] flex items-center justify-center shadow-md relative overflow-hidden group"
+              className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-md relative overflow-hidden group ${
+                isLight ? 'bg-white border border-slate-200' : 'bg-zinc-900 border border-white/[0.12]'
+              }`}
             >
               <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <LifeBuoy className="w-4 h-4 text-indigo-400 relative z-10" />
+              <LifeBuoy className="w-4 h-4 text-indigo-500 relative z-10" />
             </motion.div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-base font-bold tracking-tight text-white font-sans">
+                <span className={`text-base font-bold tracking-tight font-sans ${isLight ? 'text-slate-900' : 'text-white'}`}>
                   ProHop
                 </span>
-                <span className="px-2 py-0.5 text-[10px] font-mono font-medium bg-zinc-800 text-zinc-300 border border-zinc-700/80 rounded-full flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                <span className={`px-2 py-0.5 text-[10px] font-mono font-medium rounded-full flex items-center gap-1 ${
+                  isLight ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'bg-zinc-800 text-zinc-300 border border-zinc-700/80'
+                }`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                   <span>v2.5.0</span>
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-400 hidden sm:block tracking-normal">
+              <p className={`text-[11px] hidden sm:block tracking-normal ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
                 Enterprise Incident Management &bull; 24h SLA Core
               </p>
             </div>
@@ -77,16 +82,24 @@ export default function Navbar({
           <div className="hidden lg:flex items-center">
             <button
               onClick={onOpenCommandPalette}
-              className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-zinc-900/90 border border-white/[0.08] hover:border-white/20 text-xs text-zinc-400 hover:text-zinc-200 transition-all shadow-inner group cursor-pointer"
+              className={`flex items-center gap-3 px-3 py-1.5 rounded-xl text-xs transition-all group cursor-pointer ${
+                isLight
+                  ? 'bg-slate-100/90 hover:bg-slate-200/70 border border-slate-200 text-slate-600 hover:text-slate-900 shadow-2xs'
+                  : 'bg-zinc-900/90 border border-white/[0.08] hover:border-white/20 text-zinc-400 hover:text-zinc-200 shadow-inner'
+              }`}
             >
-              <Command className="w-3.5 h-3.5 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-              <span className="font-normal">Quick jump, filter, or command...</span>
+              <Command className={`w-3.5 h-3.5 transition-colors ${
+                isLight ? 'text-indigo-600' : 'text-zinc-400 group-hover:text-indigo-400'
+              }`} />
+              <span className={`font-normal ${isLight ? 'text-slate-600' : ''}`}>Quick jump, filter, or command...</span>
               <kbd className="kbd-badge">⌘K</kbd>
             </button>
           </div>
 
           {/* Real-Time Live Sync & SQLite WAL Status Beacon */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-white/[0.08] text-xs text-zinc-300">
+          <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs ${
+            isLight ? 'bg-slate-100/90 border border-slate-200 text-slate-700' : 'bg-zinc-900/60 border border-white/[0.08] text-zinc-300'
+          }`}>
             <span className="relative flex h-2 w-2">
               <span
                 className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
@@ -99,8 +112,8 @@ export default function Navbar({
                 }`}
               />
             </span>
-            <Database className="w-3.5 h-3.5 text-emerald-400 ml-0.5" />
-            <span className="font-mono text-[11px] text-zinc-300">
+            <Database className="w-3.5 h-3.5 text-emerald-500 ml-0.5" />
+            <span className={`font-mono text-[11px] ${isLight ? 'text-slate-700 font-medium' : 'text-zinc-300'}`}>
               {isLiveConnected ? 'SSE Live & WAL Active' : 'Connecting Sync...'}
             </span>
           </div>
@@ -112,13 +125,17 @@ export default function Navbar({
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={toggleTheme}
-              className="p-2 rounded-xl bg-zinc-900/80 border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer"
+              className={`p-2 rounded-xl transition-all cursor-pointer ${
+                isLight
+                  ? 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 shadow-2xs'
+                  : 'bg-zinc-900/80 border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/20'
+              }`}
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {theme === 'dark' ? (
                 <Sun className="w-4 h-4 text-amber-400" />
               ) : (
-                <Moon className="w-4 h-4 text-indigo-400" />
+                <Moon className="w-4 h-4 text-indigo-500" />
               )}
             </motion.button>
 
@@ -127,7 +144,11 @@ export default function Navbar({
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={onOpenShortcuts}
-              className="hidden sm:flex p-2 rounded-xl bg-zinc-900/80 border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer"
+              className={`hidden sm:flex p-2 rounded-xl transition-all cursor-pointer ${
+                isLight
+                  ? 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 shadow-2xs'
+                  : 'bg-zinc-900/80 border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/20'
+              }`}
               title="Keyboard Shortcuts (?)"
             >
               <Keyboard className="w-4 h-4" />
@@ -138,11 +159,15 @@ export default function Navbar({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onOpenApiDocs}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-white/[0.08] hover:border-white/20 rounded-xl transition-all cursor-pointer"
+              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
+                isLight
+                  ? 'bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-950 border border-slate-200/90 hover:border-slate-300 shadow-2xs'
+                  : 'text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-white/[0.08] hover:border-white/20'
+              }`}
               title="Inspect REST API endpoints & cURL tests"
             >
-              <Code2 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>API Explorer</span>
+              <Code2 className={`w-3.5 h-3.5 ${isLight ? 'text-indigo-600' : 'text-indigo-400'}`} />
+              <span className={isLight ? 'text-slate-800 font-semibold' : ''}>API Explorer</span>
             </motion.button>
 
             {/* Reset Seed Button */}
@@ -151,11 +176,15 @@ export default function Navbar({
               whileTap={{ scale: 0.98 }}
               onClick={onResetSeed}
               disabled={isSeeding}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-white/[0.08] hover:border-white/20 rounded-xl transition-all disabled:opacity-50 cursor-pointer"
+              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all disabled:opacity-50 cursor-pointer ${
+                isLight
+                  ? 'bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-950 border border-slate-200/90 hover:border-slate-300 shadow-2xs'
+                  : 'text-zinc-300 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 border border-white/[0.08] hover:border-white/20'
+              }`}
               title="Reset sample tickets & demo data"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${isSeeding ? 'animate-spin' : ''}`} />
-              <span>{isSeeding ? 'Seeding...' : 'Reset'}</span>
+              <RefreshCw className={`w-3.5 h-3.5 ${isLight ? 'text-cyan-600' : 'text-cyan-400'} ${isSeeding ? 'animate-spin' : ''}`} />
+              <span className={isLight ? 'text-slate-800 font-semibold' : ''}>{isSeeding ? 'Seeding...' : 'Reset'}</span>
             </motion.button>
 
             {/* Create Ticket Primary CTA */}

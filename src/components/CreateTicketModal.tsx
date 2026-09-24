@@ -480,19 +480,29 @@ export default function CreateTicketModal({
 
           {/* File Attachment Dropzone */}
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className={`block text-[10px] font-semibold uppercase tracking-wider mb-1.5 ${
+              isLight ? 'text-slate-600' : 'text-zinc-400'
+            }`}>
               File Attachment (Screenshot / Log)
             </label>
             {attachmentUrl ? (
-              <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900 border border-cyan-500/30">
+              <div
+                className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                  isLight
+                    ? 'bg-indigo-50/70 border-indigo-200 text-slate-800'
+                    : 'bg-zinc-900 border-cyan-500/30 text-zinc-200'
+                }`}
+              >
                 <div className="flex items-center gap-2 truncate">
-                  <FileText className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span className="text-xs text-zinc-200 truncate">{attachmentName}</span>
+                  <FileText className={`w-4 h-4 shrink-0 ${isLight ? 'text-indigo-600' : 'text-cyan-400'}`} />
+                  <span className={`text-xs font-medium truncate ${isLight ? 'text-slate-800' : 'text-zinc-200'}`}>
+                    {attachmentName}
+                  </span>
                 </div>
                 <button
                   type="button"
                   onClick={removeAttachment}
-                  className="p-1 rounded text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
+                  className="p-1 rounded text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -500,7 +510,11 @@ export default function CreateTicketModal({
             ) : (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border border-dashed border-white/[0.12] hover:border-white/30 rounded-xl p-3 text-center cursor-pointer transition-colors bg-zinc-900/50"
+                className={`border border-dashed rounded-xl p-3 text-center cursor-pointer transition-all ${
+                  isLight
+                    ? 'border-slate-300 hover:border-indigo-400 bg-slate-50 hover:bg-indigo-50/50'
+                    : 'border-white/[0.12] hover:border-white/30 bg-zinc-900/50'
+                }`}
               >
                 <input
                   ref={fileInputRef}
@@ -508,15 +522,19 @@ export default function CreateTicketModal({
                   onChange={handleFileUpload}
                   className="hidden"
                 />
-                <div className="flex items-center justify-center gap-2 text-xs text-zinc-400">
+                <div
+                  className={`flex items-center justify-center gap-2 text-xs font-medium ${
+                    isLight ? 'text-slate-600' : 'text-zinc-400'
+                  }`}
+                >
                   {isUploading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-indigo-400" />
+                      <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
                       <span>Uploading file...</span>
                     </>
                   ) : (
                     <>
-                      <Paperclip className="w-4 h-4 text-zinc-400" />
+                      <Paperclip className={`w-4 h-4 ${isLight ? 'text-indigo-600' : 'text-zinc-400'}`} />
                       <span>Attach screenshot or error log (Max 5MB)</span>
                     </>
                   )}
@@ -526,11 +544,17 @@ export default function CreateTicketModal({
           </div>
 
           {/* Footer CTAs */}
-          <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end gap-3">
+          <div
+            className={`pt-4 border-t flex items-center justify-end gap-3 ${
+              isLight ? 'border-slate-200' : 'border-white/[0.08]'
+            }`}
+          >
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs sm:text-sm font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer"
+              className={`px-4 py-2 text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
+                isLight ? 'text-slate-600 hover:text-slate-900' : 'text-zinc-400 hover:text-white'
+              }`}
             >
               Cancel
             </button>
