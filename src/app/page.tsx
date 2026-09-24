@@ -606,7 +606,7 @@ function DashboardContent() {
       <footer className="border-t border-white/[0.08] bg-[#090a0f]/80 py-6 text-center text-xs text-zinc-500 mt-16 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-medium text-zinc-400">
-            NexusCRM Enterprise Ops Platform &bull; Production Architecture
+            ProHop Enterprise Ops Platform &bull; Production Architecture
           </p>
           <div className="flex items-center gap-3 text-zinc-400">
             <span className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-400">

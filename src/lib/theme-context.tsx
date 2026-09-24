@@ -18,7 +18,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem('nexus_crm_theme') as Theme | null;
+    const saved = (localStorage.getItem('prohop_theme') || localStorage.getItem('nexus_crm_theme')) as Theme | null;
     if (saved === 'light' || saved === 'dark') {
       setThemeState(saved);
       applyTheme(saved);
@@ -44,13 +44,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     const nextTheme: Theme = theme === 'dark' ? 'light' : 'dark';
     setThemeState(nextTheme);
-    localStorage.setItem('nexus_crm_theme', nextTheme);
+    localStorage.setItem('prohop_theme', nextTheme);
     applyTheme(nextTheme);
   };
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
-    localStorage.setItem('nexus_crm_theme', t);
+    localStorage.setItem('prohop_theme', t);
     applyTheme(t);
   };
 

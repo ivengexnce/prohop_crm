@@ -406,7 +406,7 @@ export default function CommandPalette({
               <kbd className="kbd-badge">↵</kbd> Select
             </span>
           </div>
-          <span className="text-[11px] text-zinc-500">Nexus Command Core</span>
+          <span className="text-[11px] text-zinc-500">ProHop Command Hub</span>
         </div>
       </motion.div>
     </div>

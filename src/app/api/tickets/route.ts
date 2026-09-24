@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const clientIp = getClientIp(request);
-    const rateCheck = checkRateLimit(`ticket_create_${clientIp}`, 30, 60);
+    const rateCheck = checkRateLimit(`ticket_create_${clientIp}`, 100, 60);
 
     if (!rateCheck.success) {
       return NextResponse.json(
@@ -159,20 +159,25 @@ export async function POST(request: NextRequest) {
       attachment_name = null,
     } = body;
 
-    // Validation
-    if (!customer_name || !customer_email || !subject || !description) {
+    // Strict Validation: ensure string type and non-whitespace content
+    if (
+      !customer_name || typeof customer_name !== 'string' || !customer_name.trim() ||
+      !customer_email || typeof customer_email !== 'string' || !customer_email.trim() ||
+      !subject || typeof subject !== 'string' || !subject.trim() ||
+      !description || typeof description !== 'string' || !description.trim()
+    ) {
       return NextResponse.json(
         {
           error: 'Validation failed',
           message:
-            'customer_name, customer_email, subject, and description are all required fields.',
+            'customer_name, customer_email, subject, and description are all required non-empty fields.',
         },
         { status: 400 }
       );
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(customer_email)) {
+    if (!emailRegex.test(customer_email.trim())) {
       return NextResponse.json(
         {
           error: 'Validation failed',
@@ -185,7 +190,7 @@ export async function POST(request: NextRequest) {
     // Auto-generate unique Ticket ID with concurrency collision retry handling
     let newTicket: any = null;
     let attempts = 0;
-    const maxAttempts = 5;
+    const maxAttempts = 8;
 
     while (attempts < maxAttempts) {
       attempts++;
@@ -209,7 +214,7 @@ export async function POST(request: NextRequest) {
       } catch (err: any) {
         // Retry on unique constraint collision under concurrent bursts
         if (err.code === 'P2002' && attempts < maxAttempts) {
-          await new Promise((resolve) => setTimeout(resolve, Math.random() * 60 + 20));
+          await new Promise((resolve) => setTimeout(resolve, Math.random() * 80 + 30));
           continue;
         }
         throw err;

@@ -1,4 +1,4 @@
-# NexusCRM — Enterprise Customer Support Ticketing CRM System
+# ProHop — Enterprise Customer Support Ticketing CRM System
 
 A full-stack, production-ready web application for managing customer support tickets, customer interaction history, issue resolution workflows, and support team collaboration.
 

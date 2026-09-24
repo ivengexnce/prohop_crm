@@ -1,70 +1,93 @@
 {
-  "total": 18,
-  "passed": 18,
+  "appName": "ProHop CRM",
+  "auditDate": "2026-09-24T07:28:22.133Z",
+  "total": 22,
+  "passed": 22,
   "failed": 0,
   "warnings": 0,
   "tests": [
     {
-      "name": "POST /api/tickets - Create valid ticket",
+      "name": "POST /api/tickets - Create valid ticket with sequential ID",
       "category": "Functional",
       "status": "PASS",
-      "duration": "95ms",
+      "duration": "76ms",
       "details": "Created ID: TKT-009"
     },
     {
       "name": "GET /api/tickets - List all tickets (backward compatible array)",
       "category": "Functional",
       "status": "PASS",
-      "duration": "16ms",
+      "duration": "15ms",
       "details": "Total records: 9"
     },
     {
-      "name": "GET /api/tickets?page=1&limit=5 - Server-side pagination",
+      "name": "GET /api/tickets?page=1&limit=5 - Server-side pagination metadata",
       "category": "Functional",
       "status": "PASS",
-      "duration": "24ms",
+      "duration": "18ms",
       "details": "Returned 5 items of 9 total across 2 pages"
+    },
+    {
+      "name": "GET /api/tickets?status=Open - Filter tickets by lifecycle status",
+      "category": "Functional",
+      "status": "PASS",
+      "duration": "32ms",
+      "details": "Verified 4 Open tickets returned"
+    },
+    {
+      "name": "GET /api/tickets?priority=Urgent - Filter tickets by Urgent SLA priority",
+      "category": "Functional",
+      "status": "PASS",
+      "duration": "27ms",
+      "details": "Verified 2 Urgent tickets returned"
     },
     {
       "name": "GET /api/tickets/{id} - Retrieve created ticket details",
       "category": "Functional",
       "status": "PASS",
-      "duration": "45ms",
+      "duration": "29ms",
       "details": "Retrieved TKT-009 with 0 notes"
     },
     {
       "name": "PUT /api/tickets/{id} - Transition status & verify audit logging",
       "category": "Functional",
       "status": "PASS",
-      "duration": "50ms",
+      "duration": "53ms",
       "details": "Status updated to In Progress, audit log recorded: \"Status changed from \"Open\" to \"In Progress\"\""
     },
     {
       "name": "POST /api/upload - File attachment upload validation",
       "category": "Functional",
       "status": "PASS",
-      "duration": "37ms",
-      "details": "Uploaded checkout_error.log -> /uploads/1790230493873_checkout_error.log (48 bytes)"
+      "duration": "30ms",
+      "details": "Uploaded checkout_error.log -> /uploads/1790234902414_checkout_error.log (48 bytes)"
     },
     {
       "name": "GET /api/stats - Verify KPI calculations",
       "category": "Functional",
       "status": "PASS",
-      "duration": "22ms",
+      "duration": "27ms",
       "details": "Total: 9 (Open: 3, InProg: 4, Closed: 2, Rate: 22%)"
     },
     {
       "name": "GET /api/export - Verify RFC 4180 CSV Export",
       "category": "Functional",
       "status": "PASS",
-      "duration": "74ms",
+      "duration": "15ms",
       "details": "CSV size: 1159 bytes, Records: 3"
+    },
+    {
+      "name": "GET /api/docs - REST API Explorer endpoints schema verification",
+      "category": "Functional",
+      "status": "PASS",
+      "duration": "70ms",
+      "details": "Verified 7 documented API endpoints"
     },
     {
       "name": "POST /api/tickets - Rejects missing customer_name (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "18ms",
+      "duration": "21ms",
       "details": "Correctly returned 400 Bad Request"
     },
     {
@@ -75,75 +98,86 @@
       "details": "Correctly caught invalid email"
     },
     {
+      "name": "POST /api/tickets - Rejects empty subject string (400)",
+      "category": "Validation",
+      "status": "PASS",
+      "duration": "11ms",
+      "details": "Correctly rejected whitespace-only subject"
+    },
+    {
       "name": "GET /api/tickets/{id} - Returns 404 for non-existent ticket",
       "category": "Validation",
       "status": "PASS",
-      "duration": "14ms",
+      "duration": "33ms",
       "details": "Correctly returned 404 Not Found"
     },
     {
       "name": "PUT /api/tickets/{id} - Returns 404 for updating non-existent ticket",
       "category": "Validation",
       "status": "PASS",
-      "duration": "19ms",
+      "duration": "14ms",
       "details": "Correctly returned 404"
     },
     {
       "name": "PUT /api/tickets/{id} - Rejects invalid status string (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "14ms",
+      "duration": "13ms",
       "details": "Correctly validated status enum"
     },
     {
       "name": "POST /api/tickets - XSS payload sanitized / properly stored",
       "category": "Security",
       "status": "PASS",
-      "duration": "49ms",
+      "duration": "43ms",
       "details": "Payload stored intact; React JSX safely escapes rendered HTML"
     },
     {
       "name": "GET /api/tickets - SQL Injection substring safety",
       "category": "Security",
       "status": "PASS",
-      "duration": "14ms",
+      "duration": "25ms",
       "details": "Query executed safely via Prisma parameterization. Matched 0 records."
     },
     {
       "name": "CSV Formula Injection sanitized with apostrophe prefix",
       "category": "Security",
       "status": "PASS",
-      "duration": "47ms",
+      "duration": "31ms",
       "details": "Formula successfully neutralized with apostrophe escape prefix (')"
     },
     {
-      "name": "Concurrent Burst: 10 simultaneous ticket creations with retry backoff",
+      "name": "Concurrent Burst: 12 simultaneous ticket creations with retry backoff",
       "category": "Concurrency",
       "status": "PASS",
-      "duration": "383ms",
-      "details": "All 10 concurrent IDs generated cleanly with 0 collisions."
+      "duration": "364ms",
+      "details": "All 12 concurrent IDs generated cleanly with 0 collisions."
     },
     {
-      "name": "Frontend HTML Audit: Meta, Title, Viewport, Semantic Layout",
+      "name": "Frontend Branding Audit: Title, Metadata, ProHop identifiers",
       "category": "Frontend",
       "status": "PASS",
       "duration": "69ms",
-      "details": "HTML contains required title, viewport, and responsive structure"
+      "details": "HTML confirmed contains ProHop brand tokens, viewport, and semantic structure"
     }
   ],
   "benchmarks": {
     "GET /api/tickets (Paginated)": {
-      "avgMs": 16,
-      "maxMs": 22
+      "avgMs": 18,
+      "maxMs": 25
     },
     "GET /api/stats": {
-      "avgMs": 16,
-      "maxMs": 19
+      "avgMs": 15,
+      "maxMs": 16
     },
     "GET /api/export": {
       "avgMs": 16,
-      "maxMs": 17
+      "maxMs": 16
+    },
+    "GET /api/docs": {
+      "avgMs": 73,
+      "maxMs": 79
     }
   },
-  "drawbacksFound": []
+  "drawbacksDocumented": []
 }

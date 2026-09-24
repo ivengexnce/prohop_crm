@@ -3,13 +3,15 @@ import fs from 'fs';
 const BASE_URL = 'http://localhost:3000';
 
 const results = {
+  appName: 'ProHop CRM',
+  auditDate: new Date().toISOString(),
   total: 0,
   passed: 0,
   failed: 0,
   warnings: 0,
   tests: [],
   benchmarks: {},
-  drawbacksFound: [],
+  drawbacksDocumented: [],
 };
 
 async function test(name, category, fn) {
@@ -41,33 +43,23 @@ async function test(name, category, fn) {
   }
 }
 
-function warn(issue, severity, recommendation) {
-  results.warnings++;
-  results.drawbacksFound.push({
-    issue,
-    severity,
-    recommendation,
-  });
-  console.warn(`  ⚠️ [WARNING] (${severity}): ${issue}`);
-}
-
 async function runQaAutomation() {
   console.log('=====================================================');
-  console.log('🚀 NEXUS CRM — SENIOR QA AUTOMATION TEST SUITE v2.0');
+  console.log('🚀 PROHOP CRM — SENIOR QA AUTOMATION TEST SUITE v2.5');
   console.log(`Target: ${BASE_URL} | Timestamp: ${new Date().toISOString()}`);
   console.log('=====================================================\n');
 
-  // --- SECTION 1: Baseline Functional Tests ---
+  // --- SECTION 1: Baseline REST API Functional Verification ---
   console.log('📦 SECTION 1: Baseline REST API Functional Verification');
 
   let testTicketId = '';
 
-  await test('POST /api/tickets - Create valid ticket', 'Functional', async () => {
+  await test('POST /api/tickets - Create valid ticket with sequential ID', 'Functional', async () => {
     const payload = {
-      customer_name: 'QA Automation Bot',
-      customer_email: 'qa.bot@testsuite.local',
-      subject: 'Automated Functional Test Ticket',
-      description: 'Verifying end-to-end ticket creation and automated TKT-ID sequential generation.',
+      customer_name: 'QA Automation Lead',
+      customer_email: 'qa.lead@prohop.test',
+      subject: 'Automated Functional Test Verification Ticket',
+      description: 'Verifying end-to-end ticket creation and automated TKT-ID sequential generation in ProHop.',
       priority: 'High',
       category: 'Technical',
     };
@@ -95,7 +87,7 @@ async function runQaAutomation() {
     return `Total records: ${data.length}`;
   });
 
-  await test('GET /api/tickets?page=1&limit=5 - Server-side pagination', 'Functional', async () => {
+  await test('GET /api/tickets?page=1&limit=5 - Server-side pagination metadata', 'Functional', async () => {
     const res = await fetch(`${BASE_URL}/api/tickets?page=1&limit=5`);
     if (res.status !== 200) throw new Error(`Expected 200 OK, got ${res.status}`);
     const data = await res.json();
@@ -105,6 +97,26 @@ async function runQaAutomation() {
     }
     if (data.data.length > 5) throw new Error(`Limit 5 breached, got ${data.data.length}`);
     return `Returned ${data.data.length} items of ${data.pagination.total} total across ${data.pagination.totalPages} pages`;
+  });
+
+  await test('GET /api/tickets?status=Open - Filter tickets by lifecycle status', 'Functional', async () => {
+    const res = await fetch(`${BASE_URL}/api/tickets?status=Open`);
+    if (res.status !== 200) throw new Error(`Expected 200 OK, got ${res.status}`);
+    const data = await res.json();
+    const tickets = Array.isArray(data) ? data : data.data;
+    const nonOpen = tickets.filter(t => t.status !== 'Open');
+    if (nonOpen.length > 0) throw new Error(`Found ${nonOpen.length} non-Open tickets in filtered result`);
+    return `Verified ${tickets.length} Open tickets returned`;
+  });
+
+  await test('GET /api/tickets?priority=Urgent - Filter tickets by Urgent SLA priority', 'Functional', async () => {
+    const res = await fetch(`${BASE_URL}/api/tickets?priority=Urgent`);
+    if (res.status !== 200) throw new Error(`Expected 200 OK, got ${res.status}`);
+    const data = await res.json();
+    const tickets = Array.isArray(data) ? data : data.data;
+    const nonUrgent = tickets.filter(t => t.priority !== 'Urgent');
+    if (nonUrgent.length > 0) throw new Error(`Found ${nonUrgent.length} non-Urgent tickets`);
+    return `Verified ${tickets.length} Urgent tickets returned`;
   });
 
   await test('GET /api/tickets/{id} - Retrieve created ticket details', 'Functional', async () => {
@@ -135,7 +147,6 @@ async function runQaAutomation() {
       throw new Error(`Unexpected update response: ${JSON.stringify(data)}`);
     }
 
-    // Verify status update and automated audit note in Note table
     const checkRes = await fetch(`${BASE_URL}/api/tickets/${testTicketId}`);
     const checkData = await checkRes.json();
     if (checkData.status !== 'In Progress') {
@@ -204,7 +215,17 @@ async function runQaAutomation() {
     return `CSV size: ${text.length} bytes, Records: ${lines.length - 1}`;
   });
 
-  // --- SECTION 2: Negative & Boundary Validation ---
+  await test('GET /api/docs - REST API Explorer endpoints schema verification', 'Functional', async () => {
+    const res = await fetch(`${BASE_URL}/api/docs`);
+    if (res.status !== 200) throw new Error(`Expected 200 OK, got ${res.status}`);
+    const docs = await res.json();
+    if (!Array.isArray(docs) || docs.length < 5) throw new Error('Expected at least 5 documented endpoints');
+    const hasGetTickets = docs.some(d => d.path === '/api/tickets' && d.method === 'GET');
+    if (!hasGetTickets) throw new Error('Missing /api/tickets documentation entry');
+    return `Verified ${docs.length} documented API endpoints`;
+  });
+
+  // --- SECTION 2: Negative, Boundary & Validation Tests ---
   console.log('\n🛡️ SECTION 2: Negative, Boundary & Error Handling Tests');
 
   await test('POST /api/tickets - Rejects missing customer_name (400)', 'Validation', async () => {
@@ -236,6 +257,21 @@ async function runQaAutomation() {
     return 'Correctly caught invalid email';
   });
 
+  await test('POST /api/tickets - Rejects empty subject string (400)', 'Validation', async () => {
+    const res = await fetch(`${BASE_URL}/api/tickets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customer_name: 'User',
+        customer_email: 'user@example.com',
+        subject: '   ',
+        description: 'Detailed description here',
+      }),
+    });
+    if (res.status !== 400) throw new Error(`Expected 400 Bad Request, got ${res.status}`);
+    return 'Correctly rejected whitespace-only subject';
+  });
+
   await test('GET /api/tickets/{id} - Returns 404 for non-existent ticket', 'Validation', async () => {
     const res = await fetch(`${BASE_URL}/api/tickets/TKT-NONEXISTENT-99999`);
     if (res.status !== 404) throw new Error(`Expected 404 Not Found, got ${res.status}`);
@@ -262,7 +298,7 @@ async function runQaAutomation() {
     return 'Correctly validated status enum';
   });
 
-  // --- SECTION 3: Security & Edge Injection Handling ---
+  // --- SECTION 3: Security & Injection Handling Tests ---
   console.log('\n🔒 SECTION 3: Security & Injection Handling Tests');
 
   await test('POST /api/tickets - XSS payload sanitized / properly stored', 'Security', async () => {
@@ -292,7 +328,7 @@ async function runQaAutomation() {
     const res = await fetch(`${BASE_URL}/api/tickets?search=${encodeURIComponent(sqlPayload)}`);
     if (res.status !== 200) throw new Error(`Expected 200 OK, got ${res.status}`);
     const data = await res.json();
-    return `Query executed safely via Prisma parameterization. Matched ${data.length} records.`;
+    return `Query executed safely via Prisma parameterization. Matched ${Array.isArray(data) ? data.length : data.data?.length} records.`;
   });
 
   await test('CSV Formula Injection sanitized with apostrophe prefix', 'Security', async () => {
@@ -318,17 +354,17 @@ async function runQaAutomation() {
     return 'Formula successfully neutralized with apostrophe escape prefix (\')';
   });
 
-  // --- SECTION 4: Concurrency & Stress Testing ---
+  // --- SECTION 4: Concurrency & Sequential ID Stress Test ---
   console.log('\n⚡ SECTION 4: Concurrency & Sequential ID Stress Test');
 
-  await test('Concurrent Burst: 10 simultaneous ticket creations with retry backoff', 'Concurrency', async () => {
-    const promises = Array.from({ length: 10 }, (_, i) =>
+  await test('Concurrent Burst: 12 simultaneous ticket creations with retry backoff', 'Concurrency', async () => {
+    const promises = Array.from({ length: 12 }, (_, i) =>
       fetch(`${BASE_URL}/api/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          customer_name: `Concurrent User ${i + 1}`,
-          customer_email: `user${i + 1}@burst.test`,
+          customer_name: `Concurrent ProHop User ${i + 1}`,
+          customer_email: `prohop.user${i + 1}@burst.test`,
           subject: `Burst Test Ticket ${i + 1}`,
           description: `Testing concurrent generation of TKT-XXX sequence for index ${i + 1}.`,
         }),
@@ -353,6 +389,7 @@ async function runQaAutomation() {
     { name: 'GET /api/tickets (Paginated)', url: `${BASE_URL}/api/tickets?page=1&limit=10` },
     { name: 'GET /api/stats', url: `${BASE_URL}/api/stats` },
     { name: 'GET /api/export', url: `${BASE_URL}/api/export` },
+    { name: 'GET /api/docs', url: `${BASE_URL}/api/docs` },
   ];
 
   for (const ep of benchmarkEndpoints) {
@@ -368,17 +405,19 @@ async function runQaAutomation() {
     console.log(`  📊 ${ep.name}: Avg ${avg}ms | Max ${max}ms`);
   }
 
-  // --- SECTION 6: Frontend Markup & Usability Audit ---
-  console.log('\n🖥️ SECTION 6: Frontend Markup & Usability Audit');
+  // --- SECTION 6: Frontend & Branding Verification ---
+  console.log('\n🖥️ SECTION 6: Frontend Markup & ProHop Branding Audit');
 
-  await test('Frontend HTML Audit: Meta, Title, Viewport, Semantic Layout', 'Frontend', async () => {
+  await test('Frontend Branding Audit: Title, Metadata, ProHop identifiers', 'Frontend', async () => {
     const res = await fetch(`${BASE_URL}`);
     const html = await res.text();
 
+    if (!html.includes('ProHop')) throw new Error('Missing "ProHop" branding in page HTML');
+    if (html.includes('NexusCRM')) throw new Error('Legacy "NexusCRM" found in page HTML');
     if (!html.includes('<title>')) throw new Error('Missing <title> tag');
     if (!html.includes('viewport')) throw new Error('Missing viewport meta tag');
 
-    return 'HTML contains required title, viewport, and responsive structure';
+    return 'HTML confirmed contains ProHop brand tokens, viewport, and semantic structure';
   });
 
   // Print Summary

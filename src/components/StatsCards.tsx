@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { TicketStats } from '@/types/ticket';
 import {
   Inbox,
@@ -53,7 +53,7 @@ export default function StatsCards({
       icon: Inbox,
       filter: 'All',
       spotlightColor: 'rgba(99, 102, 241, 0.12)',
-      accentDot: 'bg-indigo-400',
+      accentDot: 'bg-indigo-500',
       badge: 'All Active',
       shortcut: '0',
       description: 'Unified ticket index',
@@ -66,7 +66,7 @@ export default function StatsCards({
       icon: Clock3,
       filter: 'Open',
       spotlightColor: 'rgba(16, 185, 129, 0.12)',
-      accentDot: 'bg-emerald-400',
+      accentDot: 'bg-emerald-500',
       badge: `${openPct}% queue`,
       shortcut: '1',
       description: 'Awaiting triage & response',
@@ -79,7 +79,7 @@ export default function StatsCards({
       icon: TrendingUp,
       filter: 'In Progress',
       spotlightColor: 'rgba(245, 158, 11, 0.12)',
-      accentDot: 'bg-amber-400',
+      accentDot: 'bg-amber-500',
       badge: `${inProgressPct}% active`,
       shortcut: '2',
       description: 'Investigation underway',
@@ -92,7 +92,7 @@ export default function StatsCards({
       icon: CheckCircle2,
       filter: 'Closed',
       spotlightColor: 'rgba(139, 92, 246, 0.12)',
-      accentDot: 'bg-purple-400',
+      accentDot: 'bg-purple-500',
       badge: `${resolutionRate}% settled`,
       shortcut: '3',
       description: 'Successfully verified',
@@ -105,7 +105,7 @@ export default function StatsCards({
       icon: AlertTriangle,
       filter: 'Urgent',
       spotlightColor: 'rgba(244, 63, 94, 0.16)',
-      accentDot: 'bg-rose-400',
+      accentDot: 'bg-rose-500',
       badge: urgentCount > 0 ? 'Action Needed' : 'Nominal',
       shortcut: '4',
       description: 'Critical priority tickets',
@@ -116,7 +116,7 @@ export default function StatsCards({
 
   return (
     <div className="space-y-4 mb-6">
-      {/* 5 Obsidian KPI Cards Grid */}
+      {/* 5 KPI Cards Grid with Perfect Theme Contrast */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
         {cards.map((card, idx) => {
           const Icon = card.icon;
@@ -141,16 +141,16 @@ export default function StatsCards({
               onClick={() => onSelectStatus(card.filter)}
               className={`group text-left p-4 cursor-pointer relative overflow-hidden transition-all ${
                 isActive
-                  ? 'ring-1 ring-white/20 border-white/30 bg-zinc-900/90 shadow-lg'
-                  : 'hover:border-white/15'
+                  ? 'ring-2 ring-indigo-500/40 border-indigo-500/40 shadow-lg'
+                  : 'hover:border-zinc-400/30'
               }`}
             >
               <div className="flex flex-col justify-between h-full">
                 {/* Header: Label & Status Indicator */}
                 <div className="flex items-center justify-between mb-2.5">
                   <div className="flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${card.accentDot}`} />
-                    <span className="text-[11px] font-medium tracking-wide text-zinc-400 group-hover:text-zinc-200 transition-colors uppercase">
+                    <span className={`w-2 h-2 rounded-full ${card.accentDot}`} />
+                    <span className="text-[11px] font-semibold tracking-wider uppercase text-zinc-400 group-hover:text-zinc-200 transition-colors">
                       {card.title}
                     </span>
                   </div>
@@ -164,14 +164,14 @@ export default function StatsCards({
                   {isLoading ? (
                     <div className="h-8 w-16 bg-zinc-800/80 rounded-lg animate-pulse my-0.5" />
                   ) : (
-                    <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-mono">
+                    <span className="text-2xl sm:text-3xl font-extrabold tracking-tight font-mono text-white">
                       <AnimatedNumber value={card.value} />
                     </span>
                   )}
                   <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                       card.filter === 'Urgent' && card.value > 0
-                        ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                        ? 'bg-rose-500/10 text-rose-500 border-rose-500/20'
                         : 'bg-zinc-800/60 text-zinc-400 border-zinc-700/60'
                     }`}
                   >
@@ -193,9 +193,9 @@ export default function StatsCards({
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-2.5 font-normal">
+                <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-2.5 font-medium">
                   <span className="truncate">{card.description}</span>
-                  <ArrowUpRight className="w-3 h-3 text-zinc-400 group-hover:text-zinc-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-indigo-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>
               </div>
             </SpotlightCard>
@@ -222,7 +222,7 @@ export default function StatsCards({
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
               <motion.path
-                className={slaHealthScore >= 90 ? 'text-emerald-400' : 'text-amber-400'}
+                className={slaHealthScore >= 90 ? 'text-emerald-500' : 'text-amber-500'}
                 strokeDasharray={`${slaHealthScore}, 100`}
                 strokeWidth="3.2"
                 strokeLinecap="round"
@@ -241,12 +241,12 @@ export default function StatsCards({
 
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-zinc-100">SLA Target Compliance</span>
-              <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+              <span className="font-bold text-zinc-100">SLA Target Compliance</span>
+              <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[10px] font-bold">
                 99.2% Target
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400 mt-0.5">
+            <p className="text-[11px] text-zinc-400 mt-0.5 font-medium">
               24h strict resolution boundary &bull; Zero high-severity breaches in current cycle
             </p>
           </div>
@@ -281,24 +281,24 @@ export default function StatsCards({
             />
           </div>
 
-          <div className="flex items-center justify-between text-[10px] text-zinc-400 font-medium">
+          <div className="flex items-center justify-between text-[10px] text-zinc-400 font-semibold">
             <button
               onClick={() => onSelectStatus('Open')}
-              className="flex items-center gap-1 hover:text-emerald-400 transition-colors cursor-pointer"
+              className="flex items-center gap-1 hover:text-emerald-500 transition-colors cursor-pointer"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Open: {openPct}% ({openCount})
             </button>
             <button
               onClick={() => onSelectStatus('In Progress')}
-              className="flex items-center gap-1 hover:text-amber-400 transition-colors cursor-pointer"
+              className="flex items-center gap-1 hover:text-amber-500 transition-colors cursor-pointer"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
               In Progress: {inProgressPct}% ({inProgressCount})
             </button>
             <button
               onClick={() => onSelectStatus('Closed')}
-              className="flex items-center gap-1 hover:text-purple-400 transition-colors cursor-pointer"
+              className="flex items-center gap-1 hover:text-purple-500 transition-colors cursor-pointer"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
               Closed: {closedPct}% ({closedCount})
@@ -313,7 +313,7 @@ export default function StatsCards({
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="font-mono text-zinc-300 font-medium">Live Synced</span>
+            <span className="font-mono font-semibold">Live Synced</span>
           </div>
         </div>
       </motion.div>
