@@ -196,6 +196,13 @@ async function main() {
     }
   }
 
+  // Reset sequence counter so next ticket will be TKT-009
+  await prisma.sequence.upsert({
+    where: { name: 'ticket_id' },
+    update: { value: sampleTickets.length },
+    create: { name: 'ticket_id', value: sampleTickets.length },
+  });
+
   console.log(`Successfully seeded ${sampleTickets.length} tickets with corresponding notes.`);
 }
 

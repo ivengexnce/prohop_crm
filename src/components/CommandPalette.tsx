@@ -20,7 +20,7 @@ import {
   Sparkles,
   Command as CommandIcon,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { TicketItem } from '@/types/ticket';
 import { useTheme } from '@/lib/theme-context';
 
@@ -349,7 +349,7 @@ export default function CommandPalette({
                 No matching commands or tickets found
               </p>
               <p className={`text-xs mt-1 ${theme === 'light' ? 'text-slate-400' : 'text-zinc-500'}`}>
-                Try searching for "create", "filter", or a customer name
+                Try searching for &quot;create&quot;, &quot;filter&quot;, or a customer name
               </p>
             </div>
           ) : (

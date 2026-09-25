@@ -120,6 +120,7 @@ class S3CloudStorageProvider implements StorageProvider {
   }
 
   async deleteFile(_fileUrl: string): Promise<boolean> {
+    void _fileUrl;
     return true;
   }
 }

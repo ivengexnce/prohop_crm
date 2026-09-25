@@ -10,8 +10,6 @@ import {
   FileText,
   Trash2,
   Loader2,
-  Flame,
-  CheckCircle2,
   Wand2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';

@@ -9,11 +9,9 @@ import {
   LayoutGrid,
   List,
   SlidersHorizontal,
-  Flame,
   CheckCircle2,
   Clock,
   TrendingUp,
-  Filter,
   Archive,
 } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -32,7 +30,7 @@ interface FilterToolbarProps {
   onSortChange: (sort: string) => void;
   onExportCsv: () => void;
   onResetFilters: () => void;
-  totalFilteredCount: number;
+  totalFilteredCount?: number;
   isExporting: boolean;
   viewMode: 'table' | 'kanban';
   onViewModeChange: (mode: 'table' | 'kanban') => void;
@@ -52,7 +50,7 @@ export default function FilterToolbar({
   onSortChange,
   onExportCsv,
   onResetFilters,
-  totalFilteredCount,
+  totalFilteredCount: _totalFilteredCount,
   isExporting,
   viewMode,
   onViewModeChange,

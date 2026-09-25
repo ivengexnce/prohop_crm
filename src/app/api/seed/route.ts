@@ -1,9 +1,26 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    // Delete existing notes and tickets
+    // Production Protection: Prevent accidental destructive resets in production
+    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_PUBLIC_SEED_RESET !== 'true') {
+      const authHeader = request.headers.get('authorization');
+      const confirmHeader = request.headers.get('x-confirm-destructive-reset');
+      const adminSecret = process.env.ADMIN_SECRET;
+
+      const isAuthorized = (adminSecret && authHeader === `Bearer ${adminSecret}`) || confirmHeader === 'true';
+      if (!isAuthorized) {
+        return NextResponse.json(
+          {
+            error: 'Forbidden: Destructive reset requires authorization or explicit confirmation in production.',
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Delete existing notes, tickets, and sequence
     await prisma.note.deleteMany({});
     await prisma.ticket.deleteMany({});
 
@@ -193,6 +210,13 @@ export async function POST() {
         }
       }
     }
+
+    // Reset sequence counter so next ticket will be TKT-009
+    await prisma.sequence.upsert({
+      where: { name: 'ticket_id' },
+      update: { value: sampleTickets.length },
+      create: { name: 'ticket_id', value: sampleTickets.length },
+    });
 
     return NextResponse.json({
       success: true,

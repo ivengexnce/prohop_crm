@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { TicketItem, TicketStatus } from '@/types/ticket';
-import { formatRelativeTime, getSlaStatus } from '@/lib/date-utils';
+import { getSlaStatus } from '@/lib/date-utils';
 import {
   Clock,
   MessageSquare,
@@ -14,9 +14,8 @@ import {
   TrendingUp,
   Copy,
   Check,
-  Plus,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
 import SpotlightCard from './SpotlightCard';
 
 interface KanbanBoardProps {
@@ -30,7 +29,7 @@ export default function KanbanBoard({
   tickets,
   onSelectTicket,
   onQuickStatusChange,
-  onOpenCreateModal,
+  onOpenCreateModal: _onOpenCreateModal,
 }: KanbanBoardProps) {
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
 

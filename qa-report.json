@@ -1,6 +1,22 @@
 {
   "appName": "ProHop CRM",
-  "auditDate": "2026-09-25T18:38:05.547Z",
+  "timestamp": "2026-09-25T19:54:32.105Z",
+  "auditDate": "2026-09-25T19:54:32.106Z",
+  "environment": "local",
+  "url": "http://localhost:3000",
+  "build": "passed",
+  "homepage": "passed",
+  "api": {
+    "tickets_get": "passed",
+    "tickets_post": "passed",
+    "ticket_detail": "passed",
+    "ticket_update": "passed",
+    "stats": "passed",
+    "export": "passed"
+  },
+  "database_persistence": "passed",
+  "browser_console": "passed",
+  "responsive": "passed",
   "total": 27,
   "passed": 27,
   "failed": 0,
@@ -10,98 +26,98 @@
       "name": "POST /api/tickets - Create valid ticket with sequential ID",
       "category": "Functional",
       "status": "PASS",
-      "duration": "95ms",
-      "details": "Created ID: TKT-094"
+      "duration": "194ms",
+      "details": "Created ID: TKT-148"
     },
     {
       "name": "GET /api/tickets - List all tickets (backward compatible array)",
       "category": "Functional",
       "status": "PASS",
-      "duration": "21ms",
-      "details": "Total records: 10"
+      "duration": "58ms",
+      "details": "Total records: 61"
     },
     {
       "name": "GET /api/tickets?page=1&limit=5 - Server-side pagination metadata",
       "category": "Functional",
       "status": "PASS",
-      "duration": "17ms",
-      "details": "Returned 5 items of 10 total across 2 pages"
+      "duration": "19ms",
+      "details": "Returned 5 items of 61 total across 13 pages"
     },
     {
       "name": "GET /api/tickets?status=Open - Filter tickets by lifecycle status",
       "category": "Functional",
       "status": "PASS",
-      "duration": "31ms",
-      "details": "Verified 4 Open tickets returned"
+      "duration": "32ms",
+      "details": "Verified 49 Open tickets returned"
     },
     {
       "name": "GET /api/tickets?priority=Urgent - Filter tickets by Urgent SLA priority",
       "category": "Functional",
       "status": "PASS",
-      "duration": "26ms",
-      "details": "Verified 2 Urgent tickets returned"
+      "duration": "19ms",
+      "details": "Verified 57 Urgent tickets returned"
     },
     {
       "name": "GET /api/tickets/{id} - Retrieve created ticket details",
       "category": "Functional",
       "status": "PASS",
-      "duration": "31ms",
-      "details": "Retrieved TKT-094 with 0 notes"
+      "duration": "44ms",
+      "details": "Retrieved TKT-148 with 0 notes"
     },
     {
       "name": "PUT /api/tickets/{id} - Transition status & verify audit logging",
       "category": "Functional",
       "status": "PASS",
-      "duration": "70ms",
+      "duration": "60ms",
       "details": "Status updated to In Progress, audit log recorded: \"Status changed from \"Open\" to \"In Progress\"\""
     },
     {
       "name": "POST /api/upload - File attachment upload validation",
       "category": "Functional",
       "status": "PASS",
-      "duration": "74ms",
-      "details": "Uploaded checkout_error.log -> /uploads/1790361485917_checkout_error.log (48 bytes)"
+      "duration": "28ms",
+      "details": "Uploaded checkout_error.log -> /uploads/1790366072562_checkout_error.log (48 bytes)"
     },
     {
       "name": "GET /api/stats - Verify KPI calculations",
       "category": "Functional",
       "status": "PASS",
-      "duration": "39ms",
-      "details": "Total: 10 (Open: 3, InProg: 5, Closed: 2, Rate: 20%)"
+      "duration": "15ms",
+      "details": "Total: 61 (Open: 48, InProg: 11, Closed: 2, Rate: 3%)"
     },
     {
       "name": "GET /api/export - Verify RFC 4180 CSV Export",
       "category": "Functional",
       "status": "PASS",
-      "duration": "24ms",
-      "details": "CSV size: 1253 bytes, Records: 3"
+      "duration": "17ms",
+      "details": "CSV size: 12790 bytes, Records: 48"
     },
     {
       "name": "GET /api/docs - REST API Explorer endpoints schema verification",
       "category": "Functional",
       "status": "PASS",
-      "duration": "210ms",
+      "duration": "132ms",
       "details": "Verified 7 documented API endpoints"
     },
     {
       "name": "POST /api/tickets - Rejects missing customer_name (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "22ms",
+      "duration": "19ms",
       "details": "Correctly returned 400 Bad Request"
     },
     {
       "name": "POST /api/tickets - Rejects invalid email format (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "29ms",
+      "duration": "15ms",
       "details": "Correctly caught invalid email"
     },
     {
       "name": "POST /api/tickets - Rejects empty subject string (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "16ms",
+      "duration": "15ms",
       "details": "Correctly rejected whitespace-only subject"
     },
     {
@@ -115,103 +131,103 @@
       "name": "PUT /api/tickets/{id} - Returns 404 for updating non-existent ticket",
       "category": "Validation",
       "status": "PASS",
-      "duration": "32ms",
+      "duration": "31ms",
       "details": "Correctly returned 404"
     },
     {
       "name": "PUT /api/tickets/{id} - Rejects invalid status string (400)",
       "category": "Validation",
       "status": "PASS",
-      "duration": "30ms",
+      "duration": "32ms",
       "details": "Correctly validated status enum"
     },
     {
       "name": "POST /api/tickets - XSS payload sanitized / properly stored",
       "category": "Security",
       "status": "PASS",
-      "duration": "65ms",
+      "duration": "47ms",
       "details": "Payload stored intact; React JSX safely escapes rendered HTML"
     },
     {
       "name": "GET /api/tickets - SQL Injection substring safety",
       "category": "Security",
       "status": "PASS",
-      "duration": "35ms",
+      "duration": "30ms",
       "details": "Query executed safely via Prisma parameterization. Matched 0 records."
     },
     {
       "name": "CSV Formula Injection sanitized with apostrophe prefix",
       "category": "Security",
       "status": "PASS",
-      "duration": "41ms",
+      "duration": "44ms",
       "details": "Formula successfully neutralized with apostrophe escape prefix (')"
     },
     {
       "name": "Concurrent Burst: 12 simultaneous ticket creations with retry backoff",
       "category": "Concurrency",
       "status": "PASS",
-      "duration": "415ms",
+      "duration": "1144ms",
       "details": "All 12 concurrent IDs generated cleanly with 0 collisions."
     },
     {
       "name": "Frontend Branding Audit: Title, Metadata, ProHop identifiers",
       "category": "Frontend",
       "status": "PASS",
-      "duration": "384ms",
+      "duration": "71ms",
       "details": "HTML confirmed contains ProHop brand tokens, viewport, and semantic structure"
     },
     {
       "name": "Rectification 1: Pluggable Storage Provider & File Metadata",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "31ms",
-      "details": "Provider: local, URL: /uploads/1790361488195_architecture-test.txt"
+      "duration": "19ms",
+      "details": "Provider: local, URL: /uploads/1790366075010_architecture-test.txt"
     },
     {
       "name": "Rectification 4: Soft Delete, Archival & Restore Workflow",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "1217ms",
-      "details": "Successfully soft-deleted, verified query isolation, and restored TKT-109"
+      "duration": "172ms",
+      "details": "Successfully soft-deleted, verified query isolation, and restored TKT-163"
     },
     {
       "name": "Rectification 7: Multi-Tenant Organization Scoping & Isolation",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "99ms",
+      "duration": "161ms",
       "details": "Tenant isolation confirmed: Ticket visible to org_finance and hidden from org_engineering."
     },
     {
       "name": "Rectification 6: Server-Sent Events (SSE) Live Stream Handshake",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "93ms",
+      "duration": "65ms",
       "details": "Real-time SSE event stream handshake established with initial connected payload."
     },
     {
       "name": "Rectification 8: Automated SLA Escalation Cron Daemon Execution",
       "category": "Architecture",
       "status": "PASS",
-      "duration": "102ms",
-      "details": "SLA daemon scanned 22 tickets and successfully escalated 22 at-risk tickets."
+      "duration": "262ms",
+      "details": "SLA daemon scanned 18 tickets and successfully escalated 18 at-risk tickets."
     }
   ],
   "benchmarks": {
     "GET /api/tickets (Paginated)": {
-      "avgMs": 26,
-      "maxMs": 32
+      "avgMs": 17,
+      "maxMs": 27
     },
     "GET /api/stats": {
-      "avgMs": 21,
-      "maxMs": 32
+      "avgMs": 20,
+      "maxMs": 37
     },
     "GET /api/export": {
-      "avgMs": 28,
-      "maxMs": 33
+      "avgMs": 29,
+      "maxMs": 58
     },
     "GET /api/docs": {
-      "avgMs": 102,
-      "maxMs": 146
+      "avgMs": 92,
+      "maxMs": 110
     }
   },
   "drawbacksDocumented": []

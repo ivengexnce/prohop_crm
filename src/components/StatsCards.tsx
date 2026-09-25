@@ -8,9 +8,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   TrendingUp,
-  Activity,
-  ShieldCheck,
-  Zap,
   ArrowUpRight,
 } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -119,7 +116,6 @@ export default function StatsCards({
       {/* 5 KPI Cards Grid with Perfect Theme Contrast */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
         {cards.map((card, idx) => {
-          const Icon = card.icon;
           const isActive =
             (card.filter === 'Urgent' && currentStatus === 'Urgent') ||
             (card.filter !== 'Urgent' &&

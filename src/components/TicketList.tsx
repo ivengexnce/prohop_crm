@@ -14,6 +14,8 @@ import {
   Paperclip,
   CheckSquare,
   Square,
+  AlertTriangle,
+  RefreshCw,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '@/lib/theme-context';
@@ -21,6 +23,8 @@ import { useTheme } from '@/lib/theme-context';
 interface TicketListProps {
   tickets: TicketItem[];
   isLoading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
   onSelectTicket: (ticketId: string) => void;
   onQuickStatusChange: (ticketId: string, newStatus: TicketStatus) => void;
   onResetFilters: () => void;
@@ -34,6 +38,8 @@ export default function TicketList({
   onQuickStatusChange,
   onResetFilters,
   onOpenCreateModal,
+  error,
+  onRetry,
 }: TicketListProps) {
   const { theme } = useTheme();
   const isLight = theme === 'light';
@@ -254,6 +260,34 @@ export default function TicketList({
           ))}
         </div>
       </div>
+    );
+  }
+
+  // Error State (Distinguish API/Server/Database failures from empty filter results)
+  if (error) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="glass-panel rounded-2xl p-10 sm:p-14 text-center shadow-xl border border-rose-500/20 bg-rose-500/[0.03]"
+      >
+        <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-4 shadow-inner">
+          <AlertTriangle className="w-7 h-7" />
+        </div>
+        <h3 className="text-base font-bold text-white mb-1">Service Communication Error</h3>
+        <p className="text-xs text-rose-300/80 max-w-md mx-auto mb-6 leading-relaxed">
+          {error}
+        </p>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 shadow-md shadow-rose-600/30 transition-all cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Retry Connection</span>
+          </button>
+        )}
+      </motion.div>
     );
   }
 

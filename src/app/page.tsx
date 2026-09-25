@@ -18,11 +18,6 @@ import {
   ChevronRight,
   Sparkles,
   Command,
-  Activity,
-  Layers,
-  Shield,
-  LifeBuoy,
-  Zap,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -49,6 +44,7 @@ function DashboardContent() {
 
   const [isLoadingTickets, setIsLoadingTickets] = useState(true);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
 
@@ -58,6 +54,41 @@ function DashboardContent() {
   const [isApiDocsOpen, setIsApiDocsOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+
+  // Handle Export CSV
+  const handleExportCsv = useCallback(async () => {
+    try {
+      setIsExporting(true);
+      const params = new URLSearchParams();
+      if (statusFilter && statusFilter !== 'All') {
+        if (statusFilter === 'Archived') {
+          params.append('archived', 'true');
+        } else {
+          params.append('status', statusFilter);
+        }
+      }
+      if (debouncedSearch.trim()) params.append('search', debouncedSearch.trim());
+
+      const res = await fetch(`/api/export?${params.toString()}`);
+      if (!res.ok) throw new Error('Export request failed');
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `prohop_tickets_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      showToast('success', 'Export Complete', 'Downloaded filtered tickets as RFC 4180 CSV');
+    } catch (err: any) {
+      showToast('error', 'CSV Export Failed', err.message);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [statusFilter, debouncedSearch, showToast]);
 
   // Power Keyboard Shortcuts
   useEffect(() => {
@@ -148,6 +179,7 @@ function DashboardContent() {
     isApiDocsOpen,
     isCommandPaletteOpen,
     isShortcutsOpen,
+    handleExportCsv,
   ]);
 
   // Debounce search input by 280ms
@@ -182,6 +214,7 @@ function DashboardContent() {
   const fetchTickets = useCallback(async () => {
     try {
       setIsLoadingTickets(true);
+      setApiError(null);
       const params = new URLSearchParams();
 
       if (statusFilter && statusFilter !== 'All') {
@@ -212,7 +245,12 @@ function DashboardContent() {
 
       const res = await fetch(`/api/tickets?${params.toString()}`);
       if (!res.ok) {
-        throw new Error('Failed to fetch tickets');
+        let msg = `HTTP ${res.status}: Failed to fetch tickets`;
+        try {
+          const errData = await res.json();
+          if (errData.error || errData.message) msg = errData.message || errData.error;
+        } catch {}
+        throw new Error(msg);
       }
       const data = await res.json();
 
@@ -225,8 +263,11 @@ function DashboardContent() {
         setTotalCount(data.length);
         setTotalPages(1);
       }
+      setApiError(null);
     } catch (err: any) {
-      showToast('error', 'Error loading tickets', err.message);
+      const errorMsg = err.message || 'Unable to connect to database or service';
+      setApiError(errorMsg);
+      showToast('error', 'Error loading tickets', errorMsg);
     } finally {
       setIsLoadingTickets(false);
     }
@@ -331,40 +372,6 @@ function DashboardContent() {
     }
   };
 
-  // Handle Export CSV
-  const handleExportCsv = async () => {
-    try {
-      setIsExporting(true);
-      const params = new URLSearchParams();
-      if (statusFilter && statusFilter !== 'All') {
-        if (statusFilter === 'Archived') {
-          params.append('archived', 'true');
-        } else {
-          params.append('status', statusFilter);
-        }
-      }
-      if (debouncedSearch.trim()) params.append('search', debouncedSearch.trim());
-
-      const res = await fetch(`/api/export?${params.toString()}`);
-      if (!res.ok) throw new Error('Export request failed');
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `prohop_tickets_${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-
-      showToast('success', 'Export Complete', 'Downloaded filtered tickets as RFC 4180 CSV');
-    } catch (err: any) {
-      showToast('error', 'CSV Export Failed', err.message);
-    } finally {
-      setIsExporting(false);
-    }
-  };
 
   // Reset demo seed data
   const handleResetSeed = async () => {
@@ -378,7 +385,10 @@ function DashboardContent() {
 
     try {
       setIsSeeding(true);
-      const res = await fetch('/api/seed', { method: 'POST' });
+      const res = await fetch('/api/seed', {
+        method: 'POST',
+        headers: { 'x-confirm-destructive-reset': 'true' },
+      });
       if (!res.ok) throw new Error('Failed to reset demo data');
 
       showToast('success', 'Demo Dataset Restored', 'Database reseeded with 8 sample tickets & notes.');
@@ -535,6 +545,8 @@ function DashboardContent() {
               <TicketList
                 tickets={tickets}
                 isLoading={isLoadingTickets}
+                error={apiError}
+                onRetry={fetchTickets}
                 onSelectTicket={(id) => setSelectedTicketId(id)}
                 onQuickStatusChange={handleQuickStatusChange}
                 onResetFilters={handleResetFilters}

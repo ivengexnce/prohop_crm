@@ -11,8 +11,6 @@ import {
   Sun,
   Moon,
   Keyboard,
-  Sliders,
-  Layers,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTheme } from '@/lib/theme-context';

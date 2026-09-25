@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { TicketDetail, TicketStatus, NoteItem } from '@/types/ticket';
+import React, { useState, useEffect, useCallback } from 'react';
+import { TicketDetail, TicketStatus } from '@/types/ticket';
 import { formatRelativeTime, formatFullDate, getSlaStatus } from '@/lib/date-utils';
 import {
   X,
@@ -10,23 +10,18 @@ import {
   Mail,
   Send,
   Lock,
-  MessageSquare,
-  CheckCircle2,
-  AlertCircle,
   Copy,
   Check,
-  ShieldCheck,
   RefreshCw,
   Paperclip,
   ExternalLink,
   Activity,
-  Flame,
   Sparkles,
   Zap,
   Archive,
   ArchiveRestore,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { useToast } from './Toast';
 import { fireConfettiBurst } from '@/lib/celebrate';
 import { useTheme } from '@/lib/theme-context';
@@ -63,7 +58,7 @@ export default function TicketDetailModal({
     'Payment gateway webhooks reconciled. Account balance restored.',
   ];
 
-  const fetchTicketDetails = async (id: string) => {
+  const fetchTicketDetails = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
       const res = await fetch(`/api/tickets/${id}`);
@@ -77,7 +72,7 @@ export default function TicketDetailModal({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     if (ticketId) {
@@ -85,7 +80,7 @@ export default function TicketDetailModal({
     } else {
       setTicket(null);
     }
-  }, [ticketId]);
+  }, [ticketId, fetchTicketDetails]);
 
   if (!ticketId) return null;
 
