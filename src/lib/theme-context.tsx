@@ -14,21 +14,6 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const saved = (localStorage.getItem('prohop_theme') || localStorage.getItem('nexus_crm_theme')) as Theme | null;
-    if (saved === 'light' || saved === 'dark') {
-      setThemeState(saved);
-      applyTheme(saved);
-    } else {
-      // Default to luxury dark mode
-      setThemeState('dark');
-      applyTheme('dark');
-    }
-  }, []);
-
   const applyTheme = (t: Theme) => {
     if (typeof document !== 'undefined') {
       if (t === 'light') {
@@ -40,6 +25,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
     }
   };
+
+  useEffect(() => {
+    const saved = (localStorage.getItem('prohop_theme') || localStorage.getItem('nexus_crm_theme')) as Theme | null;
+    if (saved === 'light' || saved === 'dark') {
+      setThemeState(saved);
+      applyTheme(saved);
+    } else {
+      // Default to luxury dark mode
+      setThemeState('dark');
+      applyTheme('dark');
+    }
+  }, []);
 
   const toggleTheme = () => {
     const nextTheme: Theme = theme === 'dark' ? 'light' : 'dark';

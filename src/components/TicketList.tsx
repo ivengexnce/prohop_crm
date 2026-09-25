@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TicketItem, TicketStatus } from '@/types/ticket';
 import { formatRelativeTime, getSlaStatus } from '@/lib/date-utils';
 import {
@@ -14,9 +14,6 @@ import {
   Paperclip,
   CheckSquare,
   Square,
-  Eye,
-  Sliders,
-  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '@/lib/theme-context';
