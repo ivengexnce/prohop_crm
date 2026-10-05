@@ -1,0 +1,102 @@
+# ==============================================================================
+# PROHOP ENTERPRISE CRM — SYSTEM & APPLICATION REQUIREMENTS SPECIFICATION
+# Project: ProHop CRM (Customer Support & Incident Orchestration Platform)
+# Architecture: Next.js 16 (App Router), React 19, TypeScript, Prisma, Tailwind v4
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. RUNTIME & SYSTEM PREREQUISITES
+# ------------------------------------------------------------------------------
+# Runtime Environment:
+#   Node.js:  >= 18.18.0 (Recommended: Node.js 20.x LTS or 22.x LTS)
+#   npm:      >= 9.0.0   (Recommended: npm 10.x+)
+#   OS:       Cross-platform (Linux / macOS / Windows 10/11)
+#   Memory:   Minimum 1 GB RAM (2 GB recommended for build)
+#   Storage:  Minimum 500 MB free disk space
+
+# ------------------------------------------------------------------------------
+# 2. CORE NPM PACKAGE DEPENDENCIES
+# ------------------------------------------------------------------------------
+# Production Dependencies:
+#   next == 16.3.6
+#   react == 19.2.8
+#   react-dom == 19.2.8
+#   @prisma/client == 6.4.1
+#   prisma == 6.4.1
+#   lucide-react == 1.47.0
+#   motion == 13.4.2
+#   animejs == 4.5.0
+#   @types/animejs == 3.1.13
+#
+# Development & Build Tooling:
+#   typescript == 5.x
+#   @types/node == 20.x
+#   @types/react == 19.x
+#   @types/react-dom == 19.x
+#   tailwindcss == 4.x
+#   @tailwindcss/postcss == 4.x
+#   tsx == 4.23.15
+#   eslint == 9.x
+#   eslint-config-next == 16.3.6
+
+# ------------------------------------------------------------------------------
+# 3. DATABASE & STORAGE REQUIREMENTS
+# ------------------------------------------------------------------------------
+# Development Engine:
+#   SQLite 3 with Write-Ahead Logging (WAL) mode enabled (Zero-config dev.db)
+#
+# Production Database (Optional / Recommended for Multi-Region):
+#   PostgreSQL >= 14.0 (Supabase, Neon, Railway, AWS RDS)
+#   Automatic provider detection via scripts/prepare-prisma.mjs
+#
+# Object Storage (Attachments):
+#   Local Disk: public/uploads/ (default for development and self-hosted VPS)
+#   Cloud S3:   AWS S3, Cloudflare R2, or Supabase Storage (via STORAGE_PROVIDER=s3|r2)
+
+# ------------------------------------------------------------------------------
+# 4. ENVIRONMENT CONFIGURATION (.env)
+# ------------------------------------------------------------------------------
+# Required:
+#   DATABASE_URL="file:./dev.db"  (or postgresql://user:pass@host:5432/db)
+#
+# Optional Integrations:
+#   PORT=3000
+#   ADMIN_SECRET="your_production_admin_secret"
+#   CRON_SECRET="your_cron_escalation_secret"
+#   STORAGE_PROVIDER="local"          # Options: "local" | "s3" | "r2"
+#   S3_BUCKET="prohop-attachments"
+#   S3_ENDPOINT=""
+#   S3_PUBLIC_BASE_URL=""
+#   UPSTASH_REDIS_REST_URL=""         # For distributed cluster rate limiting
+#   UPSTASH_REDIS_REST_TOKEN=""
+#   SLACK_WEBHOOK_URL=""              # Outbound real-time webhook notifications
+#   WEBHOOK_URL=""
+
+# ------------------------------------------------------------------------------
+# 5. FUNCTIONAL FEATURE REQUIREMENTS
+# ------------------------------------------------------------------------------
+# [x] Sequential Collision-Safe Ticket IDs: Monotonic TKT-XXX generation via ACID Sequence table
+# [x] Real-Time Substring Search: Queries across customer_name, email, id, subject, description
+# [x] Multi-Dimensional Filtering: Status (Open, In Progress, Closed), Priority, Category, Sorting
+# [x] Dual View Modes: Responsive Table View with J/K shortcuts and 3-Lane Kanban Board
+# [x] Interactive Executive KPIs: Live counts, SLA health score, and resolution rate with AnimatedNumber
+# [x] Chronological Notes Timeline: Differentiates public replies and private internal notes
+# [x] Automated System Audit Logging: Auto-records status transitions in ticket note history
+# [x] Automated SLA Escalation Daemon: GET/POST /api/cron/sla-escalation auto-bumps at-risk tickets
+# [x] Real-Time Server-Sent Events (SSE): Push updates to active agent browsers without polling
+# [x] Soft-Delete & Data Archival: Compliant is_archived + deleted_at with safe restore workflow
+# [x] RFC 4180 CSV Data Export: Filtered ticket downloads with CSV formula injection (DDE) prevention
+# [x] Attachment Handling: File uploads up to 5 MB with MIME type verification
+# [x] Smart AI Triage: Auto-categorization and priority inference from issue keywords
+# [x] Power User Command Palette: Quick-jump ⌘K palette and Linear-style keyboard navigation
+# [x] 1-Click Seed Reset: 8 realistic enterprise incident scenarios for evaluator testing
+# [x] Interactive REST API Explorer: Built-in documentation modal with live copyable cURL commands
+# [x] WCAG AA Accessible Design: Dark/Light modes with calibrated color psychology
+
+# ------------------------------------------------------------------------------
+# 6. VERIFICATION & TEST AUTOMATION REQUIREMENTS
+# ------------------------------------------------------------------------------
+# Automated Test Suite: node scripts/qa-automation-suite.mjs (27/27 Tests Passing)
+# Baseline API Tests:   node test-api.mjs (7/7 Core Endpoint Tests Passing)
+# Static Analysis:      npx tsc --noEmit (0 TypeScript Errors)
+# Linter:               npm run lint (0 ESLint Errors)
